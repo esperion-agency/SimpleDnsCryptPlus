@@ -47,7 +47,18 @@ namespace SimpleDnsCrypt.Helper
             try
             {
                 var settings = TomlSettings.Create(s => s.ConfigurePropertyMapping(m => m.UseKeyGenerator(standardGenerators => standardGenerators.LowerCase)));
-                Toml.WriteFile(DnscryptProxyConfiguration, Global.DnsCryptConfigurationFilePath, settings);
+                var configFile = Global.DnsCryptConfigurationFilePath;
+
+                // The model decides the values it owns and nothing else: whatever the file holds that the
+                // model has no property for is read back in and carried over, so a setting a user added by
+                // hand survives a save from the GUI instead of being silently deleted.
+                var table = Toml.Create(DnscryptProxyConfiguration, settings);
+                if (File.Exists(configFile))
+                {
+                    TomlKeyPreservation.CopyUnknownKeys(table, Toml.ReadFile(configFile, ReadTomlSettings));
+                }
+
+                Toml.WriteFile(table, configFile, settings);
                 return true;
             }
             catch (Exception)

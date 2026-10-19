@@ -90,6 +90,29 @@ while moving headings onto a shared style, and deliberately not folded into that
 resx key and a decision about which log the section actually is. Cosmetic in English, missing in the
 other 33 languages.
 
+**Saving emits defaults for keys the file never held.** `SaveConfiguration()` writes the whole typed model,
+so every property the loaded file did not supply comes out as its C# default. Observed directly: saving a
+document that carried 12 top-level keys and 5 tables produced additional keys the input never had —
+`ipv6_servers`, `doh_servers`, `require_nolog`, `log_level`, `use_syslog`, `netprobe_timeout`,
+`cache_min_ttl`, `reject_ttl` and an empty `[static]` among them. In practice the file is created from
+`dnscrypt-proxy.toml.example`, which already lists those keys, so the emission is invisible; it is not
+harmless in general, because a proxy default that differs from C#'s `false`/`0` gets written as the wrong
+value. This is also why the 2.1.18 keys the GUI has no control for were left *unmodelled*: `TomlKeyPreservation`
+keeps them verbatim, while adding `bool enable_hot_reload` to the model would start emitting `false` into
+every file that never mentioned it. Add those keys one at a time, with a control and with the proxy's own
+default, not in a bulk pass. `Tests/ProxyConfigurationRoundTripTests.EveryKeyInTheSavedFile_ComesFromTheFileOrFromTheModel`
+guards the boundary this fix is responsible for and deliberately does not assert anything about defaults.
+
+**The loader folds a mis-cased key onto the property it resembles.** `TomlSettings` maps properties with
+`UseTargetPropertySelector(standardSelectors => standardSelectors.IgnoreCase)`
+(`SimpleDnsCrypt/Helper/DnscryptProxyConfigurationManager.cs:15`), so a hand-written `REQUIRE_DNSSEC = false`
+is read as `require_dnssec` and, arriving later in the document, wins over the real `require_dnssec = true`.
+The save then writes one line with the folded value. The preservation fix at least guarantees the file never
+ends up with two spellings of the same setting, and
+`Tests/ProxyConfigurationRoundTripTests.DifferentlyCasedKeyTheModelOwns_IsNotPreservedAlongsideTheWrittenOne`
+pins that. Making the read case-sensitive is a separate decision: it would start ignoring keys that are
+legitimately spelled with another case today.
+
 ## Needs a reproduction before anyone touches it
 
 | Issue | Complaint | What is missing |

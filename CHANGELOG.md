@@ -28,6 +28,19 @@ their respective repositories for authoritative histories.
   tooltip is exactly the kind of string that fails in silence.
 
 ### Fixed
+- **A save no longer deletes settings the GUI does not own.** `SaveConfiguration()` wrote the typed model
+  and nothing else, so any key absent from `DnscryptProxyConfiguration` was erased from
+  `dnscrypt-proxy.toml` the first time the application saved — including the settings dnscrypt-proxy 2.1.18
+  documents but this GUI has no control for (`enable_hot_reload`, `bootstrap_resolvers`,
+  `odoh_servers`, `pqdnscrypt`, `[ip_encryption]`, `[captive_portals]`, `[schedules]`, `[monitoring_ui]`,
+  `[local_doh]`). `SimpleDnsCrypt/Helper/TomlKeyPreservation.cs` now reads the file that is on disk through
+  Nett's own document model and carries over every key the model does not own, descending into tables the
+  model does own so a hand-added key inside `[query_log]` survives too. A key the model owns is never
+  overwritten by the preserved copy, so the UI cannot be silently undone by a stale file. Nett 0.15.0 has
+  no extension-data attribute and cannot deserialize an unknown-shape value into a `Dictionary<string, object>`
+  property, which is why the fix sits in the writer rather than in a catch-all property on the model.
+  `Tests/ProxyConfigurationRoundTripTests.cs` covers a top-level key, an array-valued key, a key inside an
+  owned table, a whole table, a table array, and the case that already existed: the model's own value wins.
 - The main view drew its sections as thirteen copies of one checkered `Border`, each with its margin
   and padding tuned by hand. The vertical rhythm was split between 14px and 10px as a result, and
   section headings and their right-hand switches disagreed by a few pixels from tab to tab. Sections
