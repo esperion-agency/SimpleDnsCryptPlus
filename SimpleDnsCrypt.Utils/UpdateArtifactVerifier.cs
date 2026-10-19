@@ -32,10 +32,15 @@ namespace SimpleDnsCrypt.Utils
             {
                 var publicKey = Core.LoadPublicKeyFromString(ExtractKeyLine(publicKeyString));
 
-                if (!TryReadArmored(armoredSignature, out var signature, out var trustedComment))
+                var armored = ReadArmored(armoredSignature);
+
+                if (armored == null)
                 {
                     return false;
                 }
+
+                var signature = armored.Value.Signature;
+                var trustedComment = armored.Value.TrustedComment;
 
                 if (publicKey == null)
                 {
@@ -93,11 +98,13 @@ namespace SimpleDnsCrypt.Utils
             return lines.Last(l => !l.StartsWith("untrusted comment:", StringComparison.OrdinalIgnoreCase));
         }
 
-        private static bool TryReadArmored(string armored, out Minisign.Models.MinisignSignature signature, out string trustedComment)
+        /// <summary>
+        /// The signature and its trusted comment, or null when the armored text is not the four-line
+        /// minisign shape. Returned as a pair because a signature without a comment is not usable: the
+        /// hashed form has to be bound to the file name the comment records.
+        /// </summary>
+        private static (Minisign.Models.MinisignSignature Signature, string TrustedComment)? ReadArmored(string armored)
         {
-            signature = null;
-            trustedComment = null;
-
             var lines = new System.Collections.Generic.List<string>();
 
             foreach (var raw in armored.Replace("\r\n", "\n").Split('\n'))
@@ -116,7 +123,7 @@ namespace SimpleDnsCrypt.Utils
             //   <base64 global signature>
             if (lines.Count != 4)
             {
-                return false;
+                return null;
             }
 
             var untrusted = StripCommentPrefix(lines[0], "untrusted comment:");
@@ -124,13 +131,12 @@ namespace SimpleDnsCrypt.Utils
 
             if (untrusted == null || trusted == null)
             {
-                return false;
+                return null;
             }
 
-            signature = Core.LoadSignatureFromString(lines[1], trusted, lines[3]);
-            trustedComment = trusted;
+            var signature = Core.LoadSignatureFromString(lines[1], trusted, lines[3]);
 
-            return signature != null;
+            return signature == null ? null : (signature, trusted);
         }
 
         /// <summary>
@@ -165,7 +171,7 @@ namespace SimpleDnsCrypt.Utils
             return string.Equals(namedLeaf, Path.GetFileName(filePath), StringComparison.OrdinalIgnoreCase);
         }
 
-        private static string StripCommentPrefix(string line, string prefix)
+        private static string? StripCommentPrefix(string line, string prefix)
         {
             if (!line.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             {

@@ -34,7 +34,7 @@ namespace SimpleDnsCrypt.Utils
 
     public sealed class UpdateApplyResult
     {
-        private UpdateApplyResult(UpdateApplyStatus status, string artifactPath, string extractedPath)
+        private UpdateApplyResult(UpdateApplyStatus status, string? artifactPath, string? extractedPath)
         {
             Status = status;
             ArtifactPath = artifactPath;
@@ -43,15 +43,16 @@ namespace SimpleDnsCrypt.Utils
 
         public UpdateApplyStatus Status { get; }
 
-        /// <summary>Location of the signed zip kept beside the extraction, as evidence.</summary>
-        public string ArtifactPath { get; }
+        /// <summary>Location of the signed zip kept beside the extraction, as evidence. Null when the
+        /// attempt failed before anything was written.</summary>
+        public string? ArtifactPath { get; }
 
         /// <summary>Folder holding the unpacked release, or null when nothing was extracted.</summary>
-        public string ExtractedPath { get; }
+        public string? ExtractedPath { get; }
 
         public bool IsApplied => Status == UpdateApplyStatus.Applied;
 
-        internal static UpdateApplyResult Failed(UpdateApplyStatus status, string artifactPath = null)
+        internal static UpdateApplyResult Failed(UpdateApplyStatus status, string? artifactPath = null)
         {
             return new UpdateApplyResult(status, artifactPath, null);
         }
@@ -166,7 +167,7 @@ namespace SimpleDnsCrypt.Utils
         /// written into a single file. Only the leaf is used, and it is what the signature's trusted
         /// comment has to name, so a manifest cannot redirect the download elsewhere on disk.
         /// </summary>
-        private static string SafeName(string uriLocalPath)
+        private static string? SafeName(string? uriLocalPath)
         {
             if (string.IsNullOrWhiteSpace(uriLocalPath))
             {
@@ -188,7 +189,7 @@ namespace SimpleDnsCrypt.Utils
         /// The version as a folder name. Parsed rather than echoed, because the value comes from a
         /// remote document and is joined into a path.
         /// </summary>
-        private static string SafeVersionFolder(string version)
+        private static string? SafeVersionFolder(string version)
         {
             return Version.TryParse(version, out var parsed) ? parsed.ToString() : null;
         }

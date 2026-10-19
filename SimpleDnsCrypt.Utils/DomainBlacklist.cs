@@ -45,7 +45,11 @@ namespace SimpleDnsCrypt.Utils
             return sortedRules;
         }
 
-        private static async Task<string> FetchRemoteListAsync(string requestUri)
+        /// <summary>
+        /// The list's text, or null when the fetch failed - every failure mode (DNS, TLS, HTTP status,
+        /// a proxy in the way) is reported by returning nothing, and the caller skips that entry.
+        /// </summary>
+        private static async Task<string?> FetchRemoteListAsync(string requestUri)
         {
             try
             {

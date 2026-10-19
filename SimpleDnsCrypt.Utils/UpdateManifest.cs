@@ -18,29 +18,44 @@ namespace SimpleDnsCrypt.Utils
         private static readonly Regex HexSha256 =
             new Regex("^[0-9a-fA-F]{64}$", RegexOptions.Compiled);
 
+        /// <summary>
+        /// Only <see cref="Parse"/> can build one: every member is a value that has already cleared the
+        /// whole rejection list, so a caller never has to wonder whether a half-read manifest is in hand.
+        /// </summary>
+        private UpdateManifest(string format, string version, string releaseDate, Uri downloadUri,
+            string sha256, string signatureArmored)
+        {
+            Format = format;
+            Version = version;
+            ReleaseDate = releaseDate;
+            DownloadUri = downloadUri;
+            Sha256 = sha256;
+            SignatureArmored = signatureArmored;
+        }
+
         [JsonProperty("format")]
-        public string Format { get; private set; }
+        public string Format { get; }
 
         [JsonProperty("version")]
-        public string Version { get; private set; }
+        public string Version { get; }
 
         [JsonProperty("releaseDate")]
-        public string ReleaseDate { get; private set; }
+        public string ReleaseDate { get; }
 
         [JsonProperty("downloadUri")]
-        public Uri DownloadUri { get; private set; }
+        public Uri DownloadUri { get; }
 
         [JsonProperty("sha256")]
-        public string Sha256 { get; private set; }
+        public string Sha256 { get; }
 
         [JsonProperty("signatureArmored")]
-        public string SignatureArmored { get; private set; }
+        public string SignatureArmored { get; }
 
         /// <summary>
         /// Returns null for anything that is not a complete, well-formed, https-only manifest.
         /// Never throws, so a hostile or truncated response cannot crash the caller.
         /// </summary>
-        public static UpdateManifest Parse(string json)
+        public static UpdateManifest? Parse(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
             {
@@ -71,8 +86,8 @@ namespace SimpleDnsCrypt.Utils
                 return null;
             }
 
-            if (!Uri.TryCreate(downloadUri, UriKind.Absolute, out var parsedUri) ||
-                parsedUri.Scheme != Uri.UriSchemeHttps)
+            if (!Uri.TryCreate(downloadUri, UriKind.Absolute, out Uri? parsedUri) ||
+                parsedUri == null || parsedUri.Scheme != Uri.UriSchemeHttps)
             {
                 return null;
             }
@@ -82,18 +97,15 @@ namespace SimpleDnsCrypt.Utils
                 return null;
             }
 
-            return new UpdateManifest
-            {
-                Format = format,
-                Version = version,
-                ReleaseDate = releaseDate,
-                DownloadUri = parsedUri,
-                Sha256 = sha256.ToLowerInvariant(),
-                SignatureArmored = signature
-            };
+            return new UpdateManifest(format, version, releaseDate, parsedUri,
+                sha256.ToLowerInvariant(), signature);
         }
 
-        private static string ReadString(JObject root, string property)
+        /// <summary>
+        /// A missing, wrongly-typed or blank property is null: the manifest is hostile input, so
+        /// "absent" and "empty" are both reasons to reject rather than values to substitute.
+        /// </summary>
+        private static string? ReadString(JObject root, string property)
         {
             var token = root[property];
 

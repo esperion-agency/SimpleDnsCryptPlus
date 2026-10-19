@@ -19,36 +19,36 @@ namespace SimpleDnsCrypt.Utils
                 return false;
             }
 
-            if (!TryParseStrict(candidateVersion, out var candidate))
-            {
-                return false;
-            }
+            var candidate = ParseStrict(candidateVersion);
 
-            return candidate > current;
+            return candidate != null && candidate > current;
         }
 
-        private static bool TryParseStrict(string text, out Version version)
+        /// <summary>
+        /// The version, or null when the text is not a two-to-four part numeric version. Returned
+        /// rather than handed through an out parameter so the caller cannot read a value that the
+        /// shape check rejected.
+        /// </summary>
+        private static Version? ParseStrict(string text)
         {
-            version = null;
-
             var parts = text.Trim().Split('.');
 
             if (parts.Length < 3 || parts.Length > 4)
             {
-                return false;
+                return null;
             }
 
             foreach (var part in parts)
             {
                 if (part.Length == 0 || !int.TryParse(part, out var n) || n < 0)
                 {
-                    return false;
+                    return null;
                 }
             }
 
             // Version.TryParse accepts "1.0" and things like "1.0.0.0.0"; the shape check above has
             // already narrowed the input, so this only has to produce the value.
-            return Version.TryParse(text.Trim(), out version);
+            return Version.TryParse(text.Trim(), out var parsed) ? parsed : null;
         }
     }
 }

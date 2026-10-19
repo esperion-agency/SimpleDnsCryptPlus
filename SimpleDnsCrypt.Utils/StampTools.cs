@@ -14,9 +14,15 @@ namespace SimpleDnsCrypt.Utils
             switch (stamp.Protocol)
             {
                 case StampProtocol.DnsCrypt:
-                    var addressLength = Encoding.Default.GetByteCount(stamp.Address);
+                    // A dnscrypt:// stamp cannot be written without these three; the stamp type allows
+                    // null because other protocols do not carry them.
+                    var address = stamp.Address ?? throw new ArgumentNullException(nameof(stamp), "a dnscrypt stamp needs an address");
+                    var publicKey = stamp.PublicKey ?? throw new ArgumentNullException(nameof(stamp), "a dnscrypt stamp needs a public key");
+                    var providerName = stamp.ProviderName ?? string.Empty;
+
+                    var addressLength = Encoding.Default.GetByteCount(address);
                     var publicKeyLength = 32;
-                    var providerNameLength = Encoding.Default.GetByteCount(stamp.ProviderName);
+                    var providerNameLength = Encoding.Default.GetByteCount(providerName);
                     var bytes = new byte[1 + 8 +
                                          1 + addressLength +
                                          1 + publicKeyLength +
@@ -27,11 +33,11 @@ namespace SimpleDnsCrypt.Utils
                                              (Convert.ToByte(stamp.Properties.NoFilter) << 2));
                     bytes[1] = properties;
                     bytes[9] = (byte)addressLength;
-                    Encoding.Default.GetBytes(stamp.Address, bytes.AsSpan(10, addressLength));
+                    Encoding.Default.GetBytes(address, bytes.AsSpan(10, addressLength));
                     bytes[10 + addressLength] = (byte)publicKeyLength;
-                    Convert.FromHexString(stamp.PublicKey).CopyTo(bytes.AsSpan(10 + addressLength + 1, publicKeyLength));
+                    Convert.FromHexString(publicKey).CopyTo(bytes.AsSpan(10 + addressLength + 1, publicKeyLength));
                     bytes[10 + addressLength + 1 + publicKeyLength] = (byte)providerNameLength;
-                    Encoding.Default.GetBytes(stamp.ProviderName, bytes.AsSpan(10 + addressLength + 1 + publicKeyLength + 1, providerNameLength));
+                    Encoding.Default.GetBytes(providerName, bytes.AsSpan(10 + addressLength + 1 + publicKeyLength + 1, providerNameLength));
                     builder.Append(Base64Url.Encode(bytes));
                     break;
                 default:
@@ -41,11 +47,14 @@ namespace SimpleDnsCrypt.Utils
             return builder.ToString();
         }
 
-        public static bool TryDecode(string stampString, out Stamp stamp)
+        public static bool TryDecode(string stampString, out Stamp? stamp)
         {
             try
             {
                 stamp = Decode(stampString);
+                // Deliberately unchanged from before the nullable annotations: this reports success for a
+                // string that decoded to nothing. Recorded in docs/backlog-triage.md rather than fixed
+                // inside a type-annotation commit, so the behaviour change gets its own test.
                 return true;
             }
             catch
@@ -56,11 +65,12 @@ namespace SimpleDnsCrypt.Utils
         }
 
         /// <summary>
-        /// Decode an encoded Stamp. 
+        /// Decode an encoded Stamp.
         /// </summary>
         /// <param name="stamp"></param>
-        /// <returns>Stamp object.</returns>
-        public static Stamp Decode(string stamp)
+        /// <returns>The decoded stamp, or null when the string is not an sdns:// stamp, is truncated, or
+        /// names a protocol whose required fields are missing.</returns>
+        public static Stamp? Decode(string stamp)
         {
             if (!stamp.StartsWith("sdns://"))
             {
@@ -121,7 +131,7 @@ namespace SimpleDnsCrypt.Utils
 
                     if (!string.IsNullOrEmpty(stampObject.Address))
                     {
-                        if (Uri.TryCreate($"http://{stampObject.Address}", UriKind.Absolute, out Uri url))
+                        if (Uri.TryCreate($"http://{stampObject.Address}", UriKind.Absolute, out var url) && url != null)
                         {
                             stampObject.Address = url.Host;
                             if (url.Port == 80)
@@ -164,7 +174,7 @@ namespace SimpleDnsCrypt.Utils
 
                     if (!string.IsNullOrEmpty(stampObject.Address))
                     {
-                        if (Uri.TryCreate($"http://{stampObject.Address}", UriKind.Absolute, out Uri url))
+                        if (Uri.TryCreate($"http://{stampObject.Address}", UriKind.Absolute, out var url) && url != null)
                         {
                             stampObject.Address = url.Host;
                             if (url.Port == 80)
@@ -204,7 +214,7 @@ namespace SimpleDnsCrypt.Utils
                     stampObject.Address = Encoding.UTF8.GetString(stampBinary.AsSpan(relayCounter, relayAddressLength));
                     if (!string.IsNullOrEmpty(stampObject.Address))
                     {
-                        if (Uri.TryCreate($"http://{stampObject.Address}", UriKind.Absolute, out Uri url))
+                        if (Uri.TryCreate($"http://{stampObject.Address}", UriKind.Absolute, out var url) && url != null)
                         {
                             stampObject.Address = url.Host;
                             if (url.Port == 80)
@@ -245,7 +255,7 @@ namespace SimpleDnsCrypt.Utils
                 var def = rawStampListEntry.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
                 var stampFileEntry = new StampFileEntry();
-                Stamp stamp = null;
+                Stamp? stamp = null;
                 for (int i = 0; i < def.Length; i++)
                 {
                     if (i == 0)

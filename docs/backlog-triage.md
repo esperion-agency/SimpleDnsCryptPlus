@@ -128,6 +128,16 @@ ends up with two spellings of the same setting, and
 pins that. Making the read case-sensitive is a separate decision: it would start ignoring keys that are
 legitimately spelled with another case today.
 
+**`StampTools.TryDecode` reports success for a stamp that decoded to nothing.** It returns `true` whenever
+`Decode` does not throw, and `Decode` returns null for a string without the `sdns://` prefix and for a
+recognized protocol whose payload is truncated (`StampTools.cs` returns null at four points). So
+`TryDecode("not a stamp at all", out var s)` answers `true` with `s == null` — the "try" half of the name is
+wrong about its own failure mode. No caller is harmed today: the resolver dialog validates through
+`Decode(s)?.ValidationIssues` (`SimpleDnsCrypt/ViewModels/AddCustomResolverViewModel.cs:29`) and
+`ReadStampFileEntries` checks `stamp != null` after the call, so the bool is never the only signal. Making it
+honest is a one-line change (`return stamp != null;`) that needs a test pinning both halves, and the type
+change belongs with it — so it stays out of the nullable-annotation commit that documented it.
+
 ## Needs a reproduction before anyone touches it
 
 | Issue | Complaint | What is missing |

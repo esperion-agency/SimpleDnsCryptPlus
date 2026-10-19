@@ -27,6 +27,16 @@ their respective repositories for authoritative histories.
   `Tests/LocalizationCoverageTests.cs` now measures that rather than trusting it, because the
   tooltip is exactly the kind of string that fails in silence.
 
+### Changed
+- **`SimpleDnsCrypt.Utils` is compiled with `<Nullable>enable</Nullable>` and is warning-free.** The 92
+  nullable warnings that appeared when it was switched on are fixed at the source rather than silenced:
+  types that genuinely can be absent became `?` (`Stamp.Address`, `UpdateManifest.Parse`,
+  `DomainBlacklist.FetchRemoteListAsync`, `UpdateApplyResult.ArtifactPath`), a half-built manifest is no
+  longer constructible at all (`UpdateManifest` now has one private constructor that only `Parse` calls),
+  and `UpdateChecker` returns the parsed `Version` instead of an out-parameter that could be read on the
+  failure path. `StampTools.Encode` now names the field a dnscrypt stamp is missing instead of throwing
+  `NullReferenceException` from inside `Encoding.GetByteCount`.
+
 ### Fixed
 - **Seventeen strings in the interface can now be translated.** Scanning the markup for literals rather
   than fixing the one heading someone happened to notice found `Text="Proxy Logging"` and its description
