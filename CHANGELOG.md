@@ -11,6 +11,16 @@ their respective repositories for authoritative histories.
 ## [Unreleased]
 
 ### Added
+- **`docs/testing/r0-r2-checklist.md` — the run-sheet for the two manual gates.** The R0 pass (tray menu,
+  the three drag-drop surfaces, the newly-keyed strings, section alignment) and the R2 pass in a VM or
+  Windows Sandbox, with the PowerShell to run at each step: baseline capture, proof that the card's DNS is
+  `127.0.0.1` and that the service owns port 53, a firewall block on outbound UDP/53 as the decisive
+  offline test that no query leaves the box in clear text, the proxy's own peers listed to show they are
+  on 443/5353, the stopped-proxy fallback and its recovery time, both uninstall channels separately, and
+  the MSI identity checks. It ends in a results table — the row that cannot pass today (a disconnected
+  adapter left behind by the application's own in-app uninstall) is named as such, and the release-notes
+  caveat comes off only once the R2 rows are filled. `docs/testing/dns-safety.md` links to it as the
+  procedure; that file stays the reasons.
 - **Virtual adapters are marked, not hidden.** The interface list filters against
   `Global.NetworkInterfaceBlacklist`, a list of names a 2010 Windows used, so a Hyper-V or WSL
   switch, a Bluetooth PAN and any VPN whose `NetworkInterfaceType` .NET cannot name were drawn with

@@ -5,7 +5,9 @@ interfaces. Done carelessly, that leaves the test machine with no name resolutio
 `git`, `gh`, `dotnet restore` and web browsing all need DNS, it also leaves you unable to look up how
 to fix it.
 
-Pick a level before you start, and stay in it.
+Pick a level before you start, and stay in it. The click-by-click run-sheet for the two levels that gate
+a release — the tray menu, drag-drop and blank-label pass at R0, and the DNS-routing proof at R2 — is
+[r0-r2-checklist.md](r0-r2-checklist.md).
 
 ## R0 — read-only. Default for every change.
 
