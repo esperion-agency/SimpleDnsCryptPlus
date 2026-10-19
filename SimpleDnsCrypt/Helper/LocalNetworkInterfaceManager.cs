@@ -236,6 +236,13 @@ namespace SimpleDnsCrypt.Helper
         {
             try
             {
+                // The one snapshot of what each adapter's DNS was before this installation changed it,
+                // taken immediately before the first write and never again. Uninstall.exe and the MSI's
+                // deferred custom action restore from it; AppContext.BaseDirectory is the folder both
+                // executables live in, so they read the same file this writes.
+                SimpleDnsCrypt.Utils.InterfaceDnsSnapshot.Capture(AppContext.BaseDirectory,
+                    SimpleDnsCrypt.Utils.InterfaceDnsSnapshot.ReadAll);
+
                 dnsServers ??= new List<DnsServer>();
 
                 var delete4 = ProcessHelper.ExecuteWithArguments("netsh", $"interface ipv4 delete dns \"{localNetworkInterface.Name}\" all");

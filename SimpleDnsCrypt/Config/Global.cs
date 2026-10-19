@@ -104,25 +104,12 @@ namespace SimpleDnsCrypt.Config
         };
 
         /// <summary>
-        ///     List of interfaces, marked as hidden.
+        ///     List of interfaces, marked as hidden. The content lives in
+        ///     <see cref="SimpleDnsCrypt.Utils.NetworkInterfaceFilter"/> so that the UI and
+        ///     <c>Uninstall.exe</c> cannot disagree about which adapters exist; this alias is what the
+        ///     application's own call sites read.
         /// </summary>
-        public static readonly string[] NetworkInterfaceBlacklist =
-        {
-            "Microsoft Virtual",
-            "Hamachi Network",
-            "VMware Virtual",
-            "VirtualBox",
-            "Software Loopback",
-            "Microsoft ISATAP",
-            "Microsoft-ISATAP",
-            "Teredo Tunneling Pseudo-Interface",
-            "Microsoft Wi-Fi Direct Virtual",
-            "Microsoft Teredo Tunneling Adapter",
-            "Von Microsoft gehosteter",
-            "Microsoft hosted",
-            "Virtueller Microsoft-Adapter",
-            "TAP"
-        };
+        public static readonly string[] NetworkInterfaceBlacklist = SimpleDnsCrypt.Utils.NetworkInterfaceFilter.Blacklist;
 
         /// <summary>
         ///     Tokens that mark an adapter as virtual, tunnel or loopback without hiding it.
@@ -133,31 +120,7 @@ namespace SimpleDnsCrypt.Config
         ///     wrongly costs the user their Wi-Fi (DNSCrypt/SimpleDnsCrypt#565), which is why this
         ///     list decorates and never filters.
         /// </summary>
-        public static readonly string[] VirtualAdapterMarkers =
-        {
-            "Hyper-V",
-            "vEthernet",
-            "WSL",
-            "Virtual",
-            "Virtueller",
-            "gehosteter",
-            "hosted",
-            "Loopback",
-            "ISATAP",
-            "Teredo",
-            "WAN Miniport",
-            "Tunnel",
-            "VPN",
-            "Hamachi",
-            "VMware",
-            "VirtualBox",
-            "TAP",
-            "Wintun",
-            "Tailscale",
-            "WireGuard",
-            "Bluetooth",
-            "Wi-Fi Direct"
-        };
+        public static readonly string[] VirtualAdapterMarkers = SimpleDnsCrypt.Utils.NetworkInterfaceFilter.VirtualMarkers;
 
         public static string InstallPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 

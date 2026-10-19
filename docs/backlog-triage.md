@@ -67,21 +67,20 @@ the resolver list is downloaded from `public-resolvers.md`, curated upstream. No
 repository can remove an entry without forking the list. The fix belongs in the DNSCrypt resolvers
 repository.
 
-**Uninstall leaves DNS on the cards it cannot see at the time you press the button.**
-`SimpleDnsCrypt/ViewModels/MainViewModel.cs:1321-1332` says in a comment that it clears "also the
-hidden and down cards", then calls `GetLocalNetworkInterfaces` with its defaults, which filter to
-operational and non-blacklisted. Any interface that is down or blacklisted when uninstall runs keeps
-its static DNS servers — the one failure mode `docs/testing/dns-safety.md` is written around. The
-same block then re-finds the card to update by `Description.Equals(...)`, and `Description` carries
-the adapter's address list, so a DHCP change between the two enumerations makes the row a silent
-no-op. Needs an **R2** sandbox to prove any fix; this is not a code review change.
+**Uninstall still leaves DNS on the cards it cannot see at the time you press the button — the half that
+is left.** `Uninstall.exe` was rewritten to restore from the pre-change snapshot across every adapter
+regardless of link state (see the CHANGELOG entry), and `docs/testing/r0-r2-checklist.md` section 2.6
+tests it. What is *not* fixed is the application's own in-app uninstall: `MainViewModel` still recovers
+interfaces through `LocalNetworkInterfaceManager.GetLocalNetworkInterfaces` with its default filter
+(operational and non-blacklisted), and then re-finds the card with `Description.Equals(...)`, where
+`Description` carries the adapter's address list — so a DHCP change between the two enumerations makes
+that row a silent no-op. Point it at `InterfaceDnsSnapshot.BuildRestoreCommands` the same way the tool
+does. Needs an **R2** sandbox to prove any fix; this is not a code review change.
 
-**`Uninstall/Program.cs` keeps its own third copy of the interface filter.** Lines 59-95 re-implement
-the blacklist and the operational check instead of calling `LocalNetworkInterfaceManager`, and the
-MSI runs it as a deferred custom action — so the portable and installed channels can disagree about
-which adapters to restore. Recorded now because a *marker* list was added beside the blacklist:
-anyone merging them has to decide which of the three copies survives. Also R2-gated, so it stays
-separate from the visual work that surfaced it.
+**`Global.NetworkInterfaceBlacklist` is now an alias, not a second list.** The third copy — the private
+array inside `Uninstall/Program.cs` — is gone, so the portable and installed channels can no longer
+disagree about which adapters to restore. `Tests/InterfaceDnsSnapshotTests` pins both that the shared
+list still holds its 14 entries and that the two read the same array instance.
 
 **One main-view heading had no translation key.** Fixed: `Text="Proxy Logging"` in
 `SimpleDnsCrypt/Views/MainView.xaml` became `{lex:Loc Key=advanced_settings_proxy_logging}`. Doing it with a
@@ -129,8 +128,9 @@ pins that. Making the read case-sensitive is a separate decision: it would start
 legitimately spelled with another case today.
 
 **`StampTools.TryDecode` reports success for a stamp that decoded to nothing.** It returns `true` whenever
-`Decode` does not throw, and `Decode` returns null for a string without the `sdns://` prefix and for a
-recognized protocol whose payload is truncated (`StampTools.cs` returns null at four points). So
+`Decode` does not throw, and `Decode` returns null at six points: a string without the `sdns://` prefix,
+an empty payload, and each recognized protocol whose bytes are truncated
+(`SimpleDnsCrypt.Utils/StampTools.cs:73-244`). So
 `TryDecode("not a stamp at all", out var s)` answers `true` with `s == null` — the "try" half of the name is
 wrong about its own failure mode. No caller is harmed today: the resolver dialog validates through
 `Decode(s)?.ValidationIssues` (`SimpleDnsCrypt/ViewModels/AddCustomResolverViewModel.cs:29`) and

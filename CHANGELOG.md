@@ -38,6 +38,27 @@ their respective repositories for authoritative histories.
   `NullReferenceException` from inside `Encoding.GetByteCount`.
 
 ### Fixed
+- **`Uninstall.exe` no longer forgets the adapters that were down at uninstall time, and it no longer
+  keeps its own copy of the adapter filter.** The tool had a third private copy of
+  `NetworkInterfaceBlacklist` and enumerated only `OperationalStatus.Up` interfaces, so a card that was
+  unplugged, disabled, or a VPN that was not connected when you pressed Uninstall kept the static DNS
+  servers the application had written to it — and the next time it came up it still pointed at a proxy
+  that was gone. `SimpleDnsCrypt.Utils.NetworkInterfaceFilter` is now the single list both channels read
+  (`Global.NetworkInterfaceBlacklist` is an alias for it, and
+  `Tests/InterfaceDnsSnapshotTests.TheApplicationAndTheUninstallerReadTheSameList` fails the moment they
+  drift apart), and the restore walks every adapter regardless of link state. Writing a persistent DNS
+  setting does not need the link up, and **nothing in the restore enables, disables or reconnects an
+  adapter** — pinned by `RestoreCommands_NeverTryToEnableAnAdapter`.
+- **A snapshot of each adapter's DNS as it was before the first write is now kept, once.**
+  `InterfaceDnsSnapshot.Capture` runs immediately before `SetNameservers` touches a card and refuses to
+  overwrite itself on later calls, because by then the file on disk holds the proxy's own address. So a
+  port that had `192.168.1.1` before this software got it back, a machine on DHCP-supplied DNS goes back
+  to that, and an adapter the application never wrote to is left alone instead of being cleared — the
+  old tool deleted the static servers on *every* visible card, including one the user had configured for
+  other reasons. Installations that predate the file keep the previous behaviour (clear the static
+  entries), which is what `RestoreCommands_WithoutASnapshot_FallBackToDeleteOnly` pins. The netsh forms
+  are the documented ones (`set dnsservers`, `add dnsservers … index=N validate=no`); `validate=no` is
+  what makes writing a disconnected adapter possible at all.
 - **Seventeen strings in the interface can now be translated.** Scanning the markup for literals rather
   than fixing the one heading someone happened to notice found `Text="Proxy Logging"` and its description
   line, the resolvers grid's seven column headers, the tray menu's "Show Window", the "Install" and
