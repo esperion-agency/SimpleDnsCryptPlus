@@ -84,6 +84,14 @@ their respective repositories for authoritative histories.
   `NullReferenceException` from inside `Encoding.GetByteCount`.
 
 ### Fixed
+- **`StampTools.TryDecode` no longer says a stamp decoded when it did not.** The method returned `true`
+  whenever `Decode` did not throw, and `Decode` answers null at six points — no `sdns://` prefix, an empty
+  payload, and each recognized protocol whose bytes are truncated — so a string that is not a stamp at all
+  came back as `true` with `stamp == null`. It now reports what it actually produced. The one production
+  caller (`ReadStampFileEntries`) already gated on `stamp != null` and ignores the bool, so nothing
+  downstream changed; the fix makes the name honest for whoever calls it next.
+  `Tests/StampDecodeTests.TryDecode_StampThatDecodesToNothing_ReportsFailure` covers five shapes and
+  `TryDecode_ValidStamp_ReportsSuccess` keeps the fix from passing as a permanent failure.
 - **`Uninstall.exe` no longer forgets the adapters that were down at uninstall time, and it no longer
   keeps its own copy of the adapter filter.** The tool had a third private copy of
   `NetworkInterfaceBlacklist` and enumerated only `OperationalStatus.Up` interfaces, so a card that was

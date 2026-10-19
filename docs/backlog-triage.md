@@ -136,16 +136,18 @@ ends up with two spellings of the same setting, and
 pins that. Making the read case-sensitive is a separate decision: it would start ignoring keys that are
 legitimately spelled with another case today.
 
-**`StampTools.TryDecode` reports success for a stamp that decoded to nothing.** It returns `true` whenever
-`Decode` does not throw, and `Decode` returns null at six points: a string without the `sdns://` prefix,
-an empty payload, and each recognized protocol whose bytes are truncated
-(`SimpleDnsCrypt.Utils/StampTools.cs:73-244`). So
-`TryDecode("not a stamp at all", out var s)` answers `true` with `s == null` — the "try" half of the name is
-wrong about its own failure mode. No caller is harmed today: the resolver dialog validates through
-`Decode(s)?.ValidationIssues` (`SimpleDnsCrypt/ViewModels/AddCustomResolverViewModel.cs:29`) and
-`ReadStampFileEntries` checks `stamp != null` after the call, so the bool is never the only signal. Making it
-honest is a one-line change (`return stamp != null;`) that needs a test pinning both halves, and the type
-change belongs with it — so it stays out of the nullable-annotation commit that documented it.
+**`StampTools.TryDecode` reported success for a stamp that decoded to nothing — fixed.** It returned `true`
+whenever `Decode` did not throw, and `Decode` returns null at six points: a string without the `sdns://`
+prefix, an empty payload, and each recognized protocol whose bytes are truncated
+(`SimpleDnsCrypt.Utils/StampTools.cs:73-244`), so `TryDecode("not a stamp at all", out var s)` answered
+`true` with `s == null` — the "try" half of the name was wrong about its own failure mode. It now returns
+`stamp != null`. No caller changed behavior: `ReadStampFileEntries` ignores the bool and gates on
+`stamp != null` (`:279-283`), and the resolver dialog validates through `Decode(s)?.ValidationIssues`
+(`SimpleDnsCrypt/ViewModels/AddCustomResolverViewModel.cs:29`). Pinned both ways by
+`Tests/StampDecodeTests.TryDecode_StampThatDecodesToNothing_ReportsFailure` (five shapes) and
+`TryDecode_ValidStamp_ReportsSuccess`, so a permanent `return false` would not pass either. Each failure
+case asserts `Decode(...) Is.Null` before asserting on `TryDecode`, so a red means the defect and not an
+exception escaping the parse.
 
 **Widening the warnings-as-errors gate.** `Directory.Build.props` promotes the `CS86xx` nullable family
 to errors in Release (`WarningsAsErrors=nullable`, with `TreatWarningsAsErrors` left **false**). The

@@ -52,10 +52,7 @@ namespace SimpleDnsCrypt.Utils
             try
             {
                 stamp = Decode(stampString);
-                // Deliberately unchanged from before the nullable annotations: this reports success for a
-                // string that decoded to nothing. Recorded in docs/backlog-triage.md rather than fixed
-                // inside a type-annotation commit, so the behaviour change gets its own test.
-                return true;
+                return stamp != null;
             }
             catch
             {
