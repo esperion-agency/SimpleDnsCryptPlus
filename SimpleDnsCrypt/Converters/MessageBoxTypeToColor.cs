@@ -11,9 +11,9 @@ namespace SimpleDnsCrypt.Converters
     [ValueConversion(typeof(BoxType), typeof(string))]
     public class MessageBoxTypeToColor : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            switch ((BoxType)value)
+            switch ((BoxType?)value)
             {
                 case BoxType.Error:
                     //red
@@ -29,7 +29,7 @@ namespace SimpleDnsCrypt.Converters
             }
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

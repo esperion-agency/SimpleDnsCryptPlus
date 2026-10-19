@@ -1,4 +1,4 @@
-using Nett;
+﻿using Nett;
 using System;
 using System.Linq;
 
@@ -53,7 +53,7 @@ namespace SimpleDnsCrypt.Helper
                     continue;
                 }
 
-                TomlTable sourceTable, nestedTarget;
+                TomlTable? sourceTable, nestedTarget;
                 if (TryGetTable(row.Value, out sourceTable) && TryGetTable(targetValue, out nestedTarget))
                 {
                     CopyUnknownKeys(nestedTarget, sourceTable);
@@ -61,7 +61,8 @@ namespace SimpleDnsCrypt.Helper
             }
         }
 
-        private static bool TryGetTable(TomlObject value, out TomlTable table)
+        private static bool TryGetTable(TomlObject? value,
+            [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out TomlTable? table)
         {
             table = value != null && value.TomlType == TomlObjectType.Table ? value.Get<TomlTable>() : null;
             return table != null;

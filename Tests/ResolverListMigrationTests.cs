@@ -75,7 +75,7 @@ namespace Tests
         [Test]
         public void NullList_IsLeftAlone()
         {
-            Assert.IsFalse(ResolverListMigration.IsOutdatedDefaultList(null));
+            Assert.IsFalse(ResolverListMigration.IsOutdatedDefaultList(null!));
         }
     }
 }

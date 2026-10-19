@@ -27,9 +27,9 @@ namespace SimpleDnsCrypt.ViewModels
         private const int MaxDomainBlockLogEntries = 1000;
 
         private BoundedObservableCollection<DomainBlockLogLine> _domainBlockLogLines;
-        private string _domainBlockLogFile;
+        private string? _domainBlockLogFile;
         private bool _isDomainBlockLogLogging;
-        private DomainBlockLogLine _selectedDomainBlockLogLine;
+        private DomainBlockLogLine? _selectedDomainBlockLogLine;
 
         [ImportingConstructor]
         public DomainBlockLogViewModel()
@@ -62,18 +62,18 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public string DomainBlockLogFile
+        public string? DomainBlockLogFile
         {
             get => _domainBlockLogFile;
             set
             {
-                if (value.Equals(_domainBlockLogFile)) return;
+                if (string.Equals(value, _domainBlockLogFile, StringComparison.Ordinal)) return;
                 _domainBlockLogFile = value;
                 NotifyOfPropertyChange(() => DomainBlockLogFile);
             }
         }
 
-        public DomainBlockLogLine SelectedDomainBlockLogLine
+        public DomainBlockLogLine? SelectedDomainBlockLogLine
         {
             get => _selectedDomainBlockLogLine;
             set
@@ -89,7 +89,7 @@ namespace SimpleDnsCrypt.ViewModels
             set
             {
                 _isDomainBlockLogLogging = value;
-                _ = DomainBlockLog(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration);
+                _ = DomainBlockLog(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!);
                 NotifyOfPropertyChange(() => IsDomainBlockLogLogging);
             }
         }
@@ -99,10 +99,10 @@ namespace SimpleDnsCrypt.ViewModels
             try
             {
                 if (_selectedDomainBlockLogLine == null) return;
-                if (MainViewModel.Instance.DomainBlacklistViewModel == null) return;
+                if (MainViewModel.Instance?.DomainBlacklistViewModel == null) return;
                 var dialogSettings = new MetroDialogSettings
                 {
-                    DefaultText = _selectedDomainBlockLogLine.Message.ToLower(),
+                    DefaultText = _selectedDomainBlockLogLine.Message?.ToLowerInvariant() ?? string.Empty,
                     AffirmativeButtonText = LocalizationEx.GetUiString("add", Thread.CurrentThread.CurrentCulture),
                     NegativeButtonText = LocalizationEx.GetUiString("cancel", Thread.CurrentThread.CurrentCulture),
                     ColorScheme = MetroDialogColorScheme.Theme
@@ -208,7 +208,10 @@ namespace SimpleDnsCrypt.ViewModels
                 {
                     //disable block log again
                     _isDomainBlockLogLogging = false;
-                    dnscryptProxyConfiguration.blocked_names.log_file = null;
+                    if (dnscryptProxyConfiguration.blocked_names != null)
+                    {
+                        dnscryptProxyConfiguration.blocked_names.log_file = null;
+                    }
                     DnscryptProxyConfigurationManager.DnscryptProxyConfiguration = dnscryptProxyConfiguration;
                     DnscryptProxyConfigurationManager.SaveConfiguration();
                     if (DnsCryptProxyManager.IsDnsCryptProxyRunning())

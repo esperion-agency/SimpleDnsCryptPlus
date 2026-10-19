@@ -27,7 +27,7 @@ namespace Tests
         {
             var text = new string('a', length);
 
-            var size = Converter.Convert(text, typeof(double), null, CultureInfo.InvariantCulture);
+            var size = Converter.Convert(text, typeof(double), null!, CultureInfo.InvariantCulture);
 
             Assert.AreEqual(expectedSize, size,
                 $"a {length}-character adapter name must render at {expectedSize}px");
@@ -39,7 +39,7 @@ namespace Tests
             // A tile can be built before its binding has a value, and the converter must not hand
             // back the small size for that - it is the case that would otherwise look like a bug
             // in the layout rather than in the converter.
-            var size = Converter.Convert(string.Empty, typeof(double), null, CultureInfo.InvariantCulture);
+            var size = Converter.Convert(string.Empty, typeof(double), null!, CultureInfo.InvariantCulture);
 
             Assert.AreEqual(14, size);
         }

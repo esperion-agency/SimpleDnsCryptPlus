@@ -5,14 +5,14 @@
         /// <summary>
         ///		The name of the language.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         /// <summary>
         ///		Example: en
         /// </summary>
-        public string ShortCode { get; set; }
+        public string ShortCode { get; set; } = string.Empty;
         /// <summary>
         ///     Example: en-US
         /// </summary>
-        public string CultureCode { get; set; }
+        public string CultureCode { get; set; } = string.Empty;
     }
 }

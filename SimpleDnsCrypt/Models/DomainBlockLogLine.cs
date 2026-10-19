@@ -5,9 +5,10 @@ namespace SimpleDnsCrypt.Models
     public class DomainBlockLogLine : LogLine
     {
         public DateTime Time { get; set; }
-        public string Host { get; set; }
-        public string QName { get; set; }
-        public string Message { get; set; }
+        // Null when the LTSV field is absent or the line did not have the expected 4 parts (see constructor early return).
+        public string? Host { get; set; }
+        public string? QName { get; set; }
+        public string? Message { get; set; }
 
         public DomainBlockLogLine(string line)
         {

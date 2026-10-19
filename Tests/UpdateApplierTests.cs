@@ -20,10 +20,10 @@ namespace Tests
     {
         private const string ReleaseZipName = "SimpleDNSCryptPlus-x64-1.0.1-portable.zip";
 
-        private string dir;
-        private string installRoot;
-        private string pubKey;
-        private Minisign.Models.MinisignPrivateKey key;
+        private string dir = null!;
+        private string installRoot = null!;
+        private string pubKey = null!;
+        private Minisign.Models.MinisignPrivateKey key = null!;
 
         [SetUp]
         public void SetUp()
@@ -65,7 +65,7 @@ namespace Tests
         {
             // The signature is bound to a file name, so sign a copy carrying the published name.
             var toSign = Path.Combine(dir, "signing", ReleaseZipName);
-            Directory.CreateDirectory(Path.GetDirectoryName(toSign));
+            Directory.CreateDirectory(Path.GetDirectoryName(toSign)!);
             File.WriteAllBytes(toSign, zipBytes);
 
             var sigPath = Core.SignHashed(toSign, key, "Simple DNSCrypt Plus release",
@@ -106,11 +106,11 @@ namespace Tests
 
             Assert.IsNotNull(manifest, "the fixture manifest must parse");
 
-            var result = await UpdateApplier.ApplyAsync(manifest, installRoot, Returns(zipBytes), pubKey);
+            var result = await UpdateApplier.ApplyAsync(manifest!, installRoot, Returns(zipBytes), pubKey);
 
             Assert.IsTrue(result.IsApplied, "status was " + result.Status);
             Assert.IsNotNull(result.ExtractedPath);
-            Assert.IsTrue(File.Exists(Path.Combine(result.ExtractedPath, "SimpleDnsCryptPlus.exe")),
+            Assert.IsTrue(File.Exists(Path.Combine(result.ExtractedPath!, "SimpleDnsCryptPlus.exe")),
                 "the release should be unpacked into the staging folder");
             Assert.IsTrue(File.Exists(result.ArtifactPath),
                 "the signed zip stays on disk as evidence of what was verified");
@@ -127,7 +127,9 @@ namespace Tests
             var manifest = UpdateManifest.Parse(
                 ManifestJson(SignedDownloadUri(ReleaseZipName), other, armored));
 
-            var result = await UpdateApplier.ApplyAsync(manifest, installRoot, Returns(zipBytes), pubKey);
+            Assert.That(manifest, Is.Not.Null, "the fixture manifest must parse");
+
+            var result = await UpdateApplier.ApplyAsync(manifest!, installRoot, Returns(zipBytes), pubKey);
 
             Assert.AreEqual(UpdateApplyStatus.ChecksumMismatch, result.Status);
             Assert.IsNull(result.ExtractedPath);
@@ -150,7 +152,7 @@ namespace Tests
             var foreignKey = foreign.MinisignPrivateKey;
 
             var toSign = Path.Combine(dir, "forged", ReleaseZipName);
-            Directory.CreateDirectory(Path.GetDirectoryName(toSign));
+            Directory.CreateDirectory(Path.GetDirectoryName(toSign)!);
             File.WriteAllBytes(toSign, zipBytes);
             var forgedSigPath = Core.SignHashed(toSign, foreignKey, "forged",
                 "file:" + ReleaseZipName + " hashed", Path.GetDirectoryName(toSign));
@@ -158,7 +160,9 @@ namespace Tests
             var manifest = UpdateManifest.Parse(
                 ManifestJson(SignedDownloadUri(ReleaseZipName), zipBytes, File.ReadAllText(forgedSigPath)));
 
-            var result = await UpdateApplier.ApplyAsync(manifest, installRoot, Returns(zipBytes), pubKey);
+            Assert.That(manifest, Is.Not.Null, "the fixture manifest must parse");
+
+            var result = await UpdateApplier.ApplyAsync(manifest!, installRoot, Returns(zipBytes), pubKey);
 
             Assert.AreEqual(UpdateApplyStatus.SignatureInvalid, result.Status);
             Assert.IsNull(result.ExtractedPath);
@@ -171,7 +175,9 @@ namespace Tests
             var manifest = UpdateManifest.Parse(
                 ManifestJson(SignedDownloadUri(ReleaseZipName), zipBytes, ArmoredSignatureFor(zipBytes)));
 
-            var result = await UpdateApplier.ApplyAsync(manifest, installRoot,
+            Assert.That(manifest, Is.Not.Null, "the fixture manifest must parse");
+
+            var result = await UpdateApplier.ApplyAsync(manifest!, installRoot,
                 Returns(Array.Empty<byte>()), pubKey);
 
             Assert.AreEqual(UpdateApplyStatus.EmptyDownload, result.Status);
@@ -186,7 +192,9 @@ namespace Tests
                 "https://github.com/xardyx2/SimpleDnsCryptPlus/releases/download/v1.0.1/",
                 zipBytes, ArmoredSignatureFor(zipBytes)));
 
-            var result = await UpdateApplier.ApplyAsync(manifest, installRoot, Returns(zipBytes), pubKey);
+            Assert.That(manifest, Is.Not.Null, "the fixture manifest must parse");
+
+            var result = await UpdateApplier.ApplyAsync(manifest!, installRoot, Returns(zipBytes), pubKey);
 
             Assert.AreEqual(UpdateApplyStatus.UnsafeFileName, result.Status);
         }
@@ -200,7 +208,9 @@ namespace Tests
             var manifest = UpdateManifest.Parse(
                 ManifestJson(SignedDownloadUri(ReleaseZipName), zipBytes, ArmoredSignatureFor(zipBytes)));
 
-            var result = await UpdateApplier.ApplyAsync(manifest, installRoot,
+            Assert.That(manifest, Is.Not.Null, "the fixture manifest must parse");
+
+            var result = await UpdateApplier.ApplyAsync(manifest!, installRoot,
                 _ => Task.FromException<byte[]>(new IOException("no route to host")), pubKey);
 
             Assert.AreEqual(UpdateApplyStatus.DownloadFailed, result.Status);
@@ -213,12 +223,15 @@ namespace Tests
             // The point of the default is that no call site can quietly verify against some other
             // key, so pin what the default actually is.
             var method = typeof(UpdateApplier).GetMethod(nameof(UpdateApplier.ApplyAsync));
-            var parameters = method.GetParameters();
+
+            Assert.That(method, Is.Not.Null, "the reflected overload must still exist");
+
+            var parameters = method!.GetParameters();
 
             var trusted = Array.Find(parameters, p => p.Name == "trustedPublicKey");
 
             Assert.IsNotNull(trusted);
-            Assert.AreEqual(UpdateChannel.TrustedPublicKey, trusted.DefaultValue,
+            Assert.AreEqual(UpdateChannel.TrustedPublicKey, trusted!.DefaultValue,
                 "the default verification key must be the key this build ships with");
         }
     }

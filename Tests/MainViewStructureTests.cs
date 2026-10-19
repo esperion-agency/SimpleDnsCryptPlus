@@ -47,7 +47,7 @@ namespace Tests
 
             Assert.IsNotNull(dir, "could not locate the solution root from " + AppContext.BaseDirectory);
 
-            return dir.FullName;
+            return dir!.FullName;
         }
 
         private static List<XElement> LoadedView()
@@ -61,7 +61,7 @@ namespace Tests
         public void EveryFramedSectionPicksUpTheSharedBorder()
         {
             var styled = LoadedView()
-                .Count(e => (string)e.Attribute("Style") == SectionFrame);
+                .Count(e => (string?)e.Attribute("Style") == SectionFrame);
 
             Assert.AreEqual(FramedSectionCount, styled,
                 $"expected {FramedSectionCount} sections on SectionBorderStyle; a different number " +
@@ -73,7 +73,7 @@ namespace Tests
         {
             // The root Border may keep its own inline copy; every other one belongs in the style.
             var inlineFrames = LoadedView()
-                .Count(e => (string)e.Attribute("Viewport") == "0,0,8,8");
+                .Count(e => (string?)e.Attribute("Viewport") == "0,0,8,8");
 
             Assert.That(inlineFrames, Is.LessThanOrEqualTo(1),
                 $"the DrawingBrush checkered border appears {inlineFrames} times in MainView; it is " +
@@ -88,8 +88,8 @@ namespace Tests
             // invariant - the first run of this test failed on nine elements that had nothing to
             // do with the gap between frames.
             var stale = LoadedView()
-                .Where(e => e.Name.LocalName == "Border" && (string)e.Attribute("Margin") == "0,10,0,0")
-                .Select(e => (string)e.Attribute("DataContext") ?? "Border")
+                .Where(e => e.Name.LocalName == "Border" && (string?)e.Attribute("Margin") == "0,10,0,0")
+                .Select(e => (string?)e.Attribute("DataContext") ?? "Border")
                 .ToList();
 
             Assert.IsEmpty(stale,
@@ -104,7 +104,7 @@ namespace Tests
             // whatever width the window happened to give it, which is what made the grid look
             // ragged rather than merely left-aligned.
             var pinned = LoadedView()
-                .Count(e => (string)e.Attribute("Width") == "140");
+                .Count(e => (string?)e.Attribute("Width") == "140");
 
             Assert.AreEqual(0, pinned,
                 "a 140px ColumnDefinition is back, so the network cards will not line up with their gutters");
@@ -117,18 +117,18 @@ namespace Tests
             // of the copies instead: anything still carrying an inline green 20px heading is a
             // heading that will drift the next time someone nudges one of them.
             var copiedText = LoadedView()
-                .Where(e => (string)e.Attribute("FontSize") == "20" &&
-                            (string)e.Attribute("Foreground") == BrandGreen &&
+                .Where(e => (string?)e.Attribute("FontSize") == "20" &&
+                            (string?)e.Attribute("Foreground") == BrandGreen &&
                             e.Attribute("Style") == null)
                 .Select(e => e.Name.LocalName)
                 .ToList();
 
             var copiedIcons = LoadedView()
                 .Where(e => e.Name.LocalName == "PackIconMaterial" &&
-                            (string)e.Attribute("Width") == "20" &&
-                            (string)e.Attribute("Foreground") == BrandGreen &&
+                            (string?)e.Attribute("Width") == "20" &&
+                            (string?)e.Attribute("Foreground") == BrandGreen &&
                             e.Attribute("Style") == null)
-                .Select(e => (string)e.Attribute("Kind") ?? "unnamed")
+                .Select(e => (string?)e.Attribute("Kind") ?? "unnamed")
                 .ToList();
 
             Assert.IsEmpty(copiedText,
@@ -159,9 +159,13 @@ namespace Tests
 
             foreach (var dictionary in merges.First().Elements().Where(e => e.Attribute("Source") != null))
             {
-                var source = (string)dictionary.Attribute("Source");
+                var source = (string?)dictionary.Attribute("Source");
+
+                Assert.That(source, Is.Not.Null,
+                    "a merged dictionary in MainView.xaml carries a Source attribute with no value");
+
                 var onDisk = Path.Combine(projectDir,
-                    source.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    source!.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
 
                 if (!File.Exists(onDisk))
                 {

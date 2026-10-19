@@ -38,8 +38,10 @@ namespace SimpleDnsCrypt.Helper
 
         /// <summary>
         ///     The version this running build reports, which is what a manifest is compared against.
+        ///     Null only for an assembly that carries no version at all; the update check treats that as
+        ///     "nothing to offer" rather than guessing.
         /// </summary>
-        public static Version CurrentVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version;
+        public static Version? CurrentVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version;
 
         /// <summary>
         ///     The manifest for the architecture this process is running as.
@@ -51,7 +53,7 @@ namespace SimpleDnsCrypt.Helper
         ///     Returns the newer release this build should offer, or null when there is nothing to
         ///     offer - up to date, unreadable manifest, or unreachable server.
         /// </summary>
-        public static async Task<UpdateManifest> CheckForUpdateAsync(CancellationToken token = default)
+        public static async Task<UpdateManifest?> CheckForUpdateAsync(CancellationToken token = default)
         {
             try
             {

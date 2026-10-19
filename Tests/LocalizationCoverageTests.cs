@@ -283,10 +283,13 @@ namespace Tests
             // languages, so a regex-only check would pass while measuring the wrong thing.
             var document = System.Xml.Linq.XDocument.Load(resxPath);
 
-            return document.Root
+            Assert.That(document.Root, Is.Not.Null, $"{resxPath} has no root element");
+
+            return document.Root!
                 .Elements("data")
-                .Select(e => (string)e.Attribute("name"))
+                .Select(e => (string?)e.Attribute("name"))
                 .Where(n => !string.IsNullOrEmpty(n))
+                .Select(n => n!)
                 .ToHashSet();
         }
 
@@ -315,7 +318,7 @@ namespace Tests
 
             Assert.IsNotNull(dir, "could not locate the solution root from " + AppContext.BaseDirectory);
 
-            return dir.FullName;
+            return dir!.FullName;
         }
     }
 }

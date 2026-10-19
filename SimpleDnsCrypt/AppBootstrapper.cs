@@ -18,9 +18,19 @@ namespace SimpleDnsCrypt
 {
     public class AppBootstrapper : BootstrapperBase
     {
-        private CompositionContainer _container;
+        private CompositionContainer? _container;
         private static readonly ILog Log = LogManagerHelper.Factory();
-        private static Mutex _mutex;
+        private static Mutex? _mutex;
+
+        /// <summary>
+        ///     The container once <see cref="Configure"/> has built it. Reaching for it before that is a
+        ///     broken start, so this says so out loud: a null-conditional on <c>_container</c> here would
+        ///     hand Caliburn an empty list or silently skip an import, and the app would then fail later
+        ///     and somewhere much harder to read.
+        /// </summary>
+        private CompositionContainer RequiredContainer => _container
+            ?? throw new InvalidOperationException(
+                "The composition container was never configured; the application cannot resolve views.");
 
         public AppBootstrapper()
         {
@@ -51,19 +61,19 @@ namespace SimpleDnsCrypt
         protected override object GetInstance(Type service, string key)
         {
             var contract = string.IsNullOrEmpty(key) ? AttributedModelServices.GetContractName(service) : key;
-            var exports = _container.GetExportedValues<object>(contract);
+            var exports = RequiredContainer.GetExportedValues<object>(contract);
 
             return exports.FirstOrDefault() ?? throw new Exception($"Could not locate any instances of contract {contract}.");
         }
 
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
-            return _container.GetExportedValues<object>(AttributedModelServices.GetContractName(service));
+            return RequiredContainer.GetExportedValues<object>(AttributedModelServices.GetContractName(service));
         }
 
         protected override void BuildUp(object instance)
         {
-            _container.SatisfyImportsOnce(instance);
+            RequiredContainer.SatisfyImportsOnce(instance);
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)
@@ -71,7 +81,7 @@ namespace SimpleDnsCrypt
             try
             {
                 // set the working directory
-                Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+                Directory.SetCurrentDirectory(SimpleDnsCrypt.Config.Global.InstallPath);
 
                 // prevent multiple instances
                 // Name kept as "SimpleDnsCrypt" on purpose: renaming it would let a legacy
@@ -90,7 +100,7 @@ namespace SimpleDnsCrypt
                     LogMode.Debug = true;
                 }
 
-                var loader = _container.GetExportedValue<LoaderViewModel>();
+                var loader = RequiredContainer.GetExportedValue<LoaderViewModel>();
                 var windowManager = IoC.Get<IWindowManager>();
                 windowManager.ShowDialogAsync(loader);
             }

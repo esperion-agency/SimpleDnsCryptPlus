@@ -138,6 +138,48 @@ wrong about its own failure mode. No caller is harmed today: the resolver dialog
 honest is a one-line change (`return stamp != null;`) that needs a test pinning both halves, and the type
 change belongs with it — so it stays out of the nullable-annotation commit that documented it.
 
+**Widening the warnings-as-errors gate.** `Directory.Build.props` promotes the `CS86xx` nullable family
+to errors in Release (`WarningsAsErrors=nullable`, with `TreatWarningsAsErrors` left **false**). The
+analyzer rules the plan named are configured in `.editorconfig` at `warning`, and measured against the
+whole solution with those severities on, counting each site once (the WPF compiler runs the analyzers a
+second time over a `*_wpftmp` project, which would otherwise double every number):
+
+| Rule | Sites | Files |
+|---|---|---|
+| CA1031 — catch a general exception type | 92 | 36 |
+| CA1062 — validate an external argument before dereferencing | 62 | 28 |
+| IDE0005 — unnecessary using directive | not reported during a build at all | — |
+
+Those are not defects to sweep. CA1031 in this codebase is mostly the deliberate "a service, a file or the
+network misbehaved and a GUI must still start" catch, and each one wants a decision about what the user is
+told, not a mechanical `throw`. Promote one rule at a time, per project: fix its count to zero, then move
+that rule from `warning` to `error` in `.editorconfig` and let `WarningsAsErrors` grow. Note that IDE0005
+is reported by the IDE but not during `dotnet build` even with `EnforceCodeStyleInBuild=true`, so a claim
+about it needs a `dotnet format --verify-changes` run, not a build log — that is why the third row says
+"not reported" rather than "zero".
+
+**The encoding contract is undecided, and `.editorconfig` says so rather than guessing.** Line endings
+are settled: every tracked text file the repository cares about is CRLF in the working tree, and the rule
+is scoped to the text families so it can never be applied to a `.png`. UTF-8 BOM is not: measured over
+`git ls-files`, 95 of 127 `.cs`, 25 of 27 `.xaml`, 19 of 19 `.txt`, 2 of 2 `.manifest` and 1 of 15 `.md`
+carry one, while 32 `.cs`, 34 of 36 `.resx` and every `.yml`, `.json`, `.ps1`, `.py` and `.wxs` do not.
+Adding the BOM to the minority is a 32-file whitespace commit that no test asks for; removing it from the
+majority is the same commit in the other direction and changes what Windows PowerShell 5.1 assumes about
+the `.ps1` files. Either is a decision for whoever next touches those files, and it should come with the
+`.gitattributes` line that makes it stick (`*.cs text working-tree=crlf`) rather than with a rule an editor
+enforces one file at a time.
+
+**`ManageFallbackResolvers` commits when the user presses Cancel.** The dialog edits
+`fallback_resolvers`, but the "what was it before" snapshot taken two lines earlier is
+`listen_addresses` (`SimpleDnsCrypt/ViewModels/MainViewModel.cs:869`), and the cancel path at `:877`
+compares the proposed list against that wrong snapshot. Fallback resolvers are not the listen addresses
+in any normal configuration, so the comparison almost never matches and the method writes the list and
+calls `SaveAdvancedSettings()` even though the dialog returned `false`. `ListenAddresses()` right below
+it uses the same shape correctly (`:887` snapshots `listen_addresses` for the `listen_addresses` dialog).
+The fix is one identifier at `:869` plus a test that opens the dialog, changes nothing, cancels, and
+asserts no save happened — which needs the dialog result to be injectable, so it is a small design job
+and not a drive-by. Not touched by the nullable pass, which only made the snapshot null-safe.
+
 ## Needs a reproduction before anyone touches it
 
 | Issue | Complaint | What is missing |

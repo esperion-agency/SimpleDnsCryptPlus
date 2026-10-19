@@ -18,6 +18,7 @@ namespace SimpleDnsCrypt.Helper
                 try
                 {
                     var version = Assembly.GetExecutingAssembly().GetName().Version;
+                    if (version == null) return "0";
                     return $"{version.Major}.{version.Minor}.{version.Build}";
                 }
                 catch (FormatException)

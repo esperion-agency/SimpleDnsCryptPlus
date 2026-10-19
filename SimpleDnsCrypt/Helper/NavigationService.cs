@@ -26,7 +26,7 @@ namespace SimpleDnsCrypt.Helper
             new PropertyMetadata(null, OnTextChanged)
             );
 
-        public static string GetText(DependencyObject d)
+        public static string? GetText(DependencyObject d)
         {
             return d.GetValue(TextProperty) as string;
         }
@@ -44,7 +44,7 @@ namespace SimpleDnsCrypt.Helper
 
             textBlock.Inlines.Clear();
 
-            var newText = (string)e.NewValue;
+            var newText = e.NewValue as string;
             if (string.IsNullOrEmpty(newText))
                 return;
 
@@ -85,9 +85,9 @@ namespace SimpleDnsCrypt.Helper
                 textBlock.Inlines.Add(new Run(newText.Substring(lastPos)));
         }
 
-        private static void OnUrlClick(object sender, RoutedEventArgs e)
+        private static void OnUrlClick(object? sender, RoutedEventArgs e)
         {
-            var link = (Hyperlink)sender;
+            if (sender is not Hyperlink link || link.NavigateUri == null) return;
             // Do something with link.NavigateUri like:
             Process.Start(link.NavigateUri.ToString());
         }

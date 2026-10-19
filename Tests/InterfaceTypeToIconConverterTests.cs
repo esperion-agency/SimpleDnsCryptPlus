@@ -44,7 +44,7 @@ namespace Tests
         {
             var icon = Converter().Convert(
                 Card(NetworkInterfaceType.Ethernet, OperationalStatus.Up, isVirtual: true),
-                typeof(string), null, En);
+                typeof(string), null!, En);
 
             Assert.AreEqual("CubeOutline", icon,
                 "a Hyper-V or Bluetooth adapter rendered with the cable icon, which is the whole " +
@@ -56,7 +56,7 @@ namespace Tests
         {
             var icon = Converter().Convert(
                 Card(NetworkInterfaceType.Ethernet, OperationalStatus.Up, isVirtual: false),
-                typeof(string), null, En);
+                typeof(string), null!, En);
 
             Assert.AreEqual("EthernetCable", icon);
         }
@@ -68,7 +68,7 @@ namespace Tests
             // virtual adapter to the cube must not quietly swallow that for the physical ones.
             var icon = Converter().Convert(
                 Card(NetworkInterfaceType.Wireless80211, OperationalStatus.Down, isVirtual: false),
-                typeof(string), null, En);
+                typeof(string), null!, En);
 
             Assert.AreEqual("WifiOff", icon);
         }

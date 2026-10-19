@@ -34,7 +34,7 @@ namespace SimpleDnsCrypt.ViewModels
         private BoundedObservableCollection<QueryLogLine> _queryLogLines;
         private string _queryLogFile;
         private bool _isQueryLogLogging;
-        private QueryLogLine _selectedQueryLogLine;
+        private QueryLogLine? _selectedQueryLogLine;
 
         [ImportingConstructor]
         public QueryLogViewModel(IWindowManager windowManager, IEventAggregator events)
@@ -71,10 +71,10 @@ namespace SimpleDnsCrypt.ViewModels
             try
             {
                 if (_selectedQueryLogLine == null) return;
-                if (MainViewModel.Instance.DomainBlacklistViewModel == null) return;
+                if (MainViewModel.Instance?.DomainBlacklistViewModel == null) return;
                 var dialogSettings = new MetroDialogSettings
                 {
-                    DefaultText = _selectedQueryLogLine.Remote.ToLower(),
+                    DefaultText = _selectedQueryLogLine.Remote?.ToLowerInvariant() ?? string.Empty,
                     AffirmativeButtonText = LocalizationEx.GetUiString("add", Thread.CurrentThread.CurrentCulture),
                     NegativeButtonText = LocalizationEx.GetUiString("cancel", Thread.CurrentThread.CurrentCulture),
                     ColorScheme = MetroDialogColorScheme.Theme
@@ -125,7 +125,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public QueryLogLine SelectedQueryLogLine
+        public QueryLogLine? SelectedQueryLogLine
         {
             get => _selectedQueryLogLine;
             set
@@ -141,7 +141,7 @@ namespace SimpleDnsCrypt.ViewModels
             set
             {
                 _isQueryLogLogging = value;
-                QueryLog(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration);
+                QueryLog(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!);
                 NotifyOfPropertyChange(() => IsQueryLogLogging);
             }
         }
@@ -251,7 +251,11 @@ namespace SimpleDnsCrypt.ViewModels
                     _isQueryLogLogging = false;
                     if (DnsCryptProxyManager.IsDnsCryptProxyRunning())
                     {
-                        dnscryptProxyConfiguration.query_log.file = null;
+                        // A file with no [query_log] section already has no query log: nothing to turn off.
+                        if (dnscryptProxyConfiguration.query_log != null)
+                        {
+                            dnscryptProxyConfiguration.query_log.file = null;
+                        }
                         DnscryptProxyConfigurationManager.DnscryptProxyConfiguration = dnscryptProxyConfiguration;
                         if (DnscryptProxyConfigurationManager.SaveConfiguration())
                         {

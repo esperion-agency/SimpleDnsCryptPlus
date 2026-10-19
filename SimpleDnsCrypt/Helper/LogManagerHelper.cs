@@ -8,7 +8,7 @@ namespace SimpleDnsCrypt.Helper
         public static ILog Factory()
         {
             var callerFrame = new StackFrame(1);
-            return LogManager.GetLog(callerFrame.GetMethod().ReflectedType);
+            return LogManager.GetLog(callerFrame.GetMethod()?.ReflectedType ?? typeof(LogManagerHelper));
         }
     }
 }

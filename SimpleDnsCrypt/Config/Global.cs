@@ -122,7 +122,8 @@ namespace SimpleDnsCrypt.Config
         /// </summary>
         public static readonly string[] VirtualAdapterMarkers = SimpleDnsCrypt.Utils.NetworkInterfaceFilter.VirtualMarkers;
 
-        public static string InstallPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string InstallPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+            ?? AppContext.BaseDirectory;
 
         public static string DnsCryptFolderPath { get; } = Path.Combine(InstallPath, DnsCryptProxyFolderName);
 

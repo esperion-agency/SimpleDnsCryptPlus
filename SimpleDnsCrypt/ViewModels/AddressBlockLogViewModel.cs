@@ -19,9 +19,9 @@ namespace SimpleDnsCrypt.ViewModels
         private const int MaxAddressBlockLogEntries = 1000;
 
         private BoundedObservableCollection<AddressBlockLogLine> _addressBlockLogLines;
-        private string _addressBlockLogFile;
+        private string? _addressBlockLogFile;
         private bool _isAddressBlockLogLogging;
-        private AddressBlockLogLine _selectedAddressBlockLogLine;
+        private AddressBlockLogLine? _selectedAddressBlockLogLine;
 
         [ImportingConstructor]
         public AddressBlockLogViewModel(IWindowManager windowManager, IEventAggregator events)
@@ -57,18 +57,18 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public string AddressBlockLogFile
+        public string? AddressBlockLogFile
         {
             get => _addressBlockLogFile;
             set
             {
-                if (value.Equals(_addressBlockLogFile)) return;
+                if (value == _addressBlockLogFile) return;
                 _addressBlockLogFile = value;
                 NotifyOfPropertyChange(() => AddressBlockLogFile);
             }
         }
 
-        public AddressBlockLogLine SelectedAddressBlockLogLine
+        public AddressBlockLogLine? SelectedAddressBlockLogLine
         {
             get => _selectedAddressBlockLogLine;
             set
@@ -84,7 +84,7 @@ namespace SimpleDnsCrypt.ViewModels
             set
             {
                 _isAddressBlockLogLogging = value;
-                AddressBlockLog(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration);
+                AddressBlockLog(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!);
                 NotifyOfPropertyChange(() => IsAddressBlockLogLogging);
             }
         }

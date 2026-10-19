@@ -19,7 +19,7 @@ namespace SimpleDnsCrypt
         /// <returns>The proper window</returns>
         protected override Window EnsureWindow(object model, object view, bool isDialog)
         {
-            Window window = view as BaseWindow;
+            Window? window = view as BaseWindow;
 
             if (window == null)
             {
@@ -75,7 +75,7 @@ namespace SimpleDnsCrypt
             }
             else
             {
-                Window owner = InferOwnerOf(window);
+                Window? owner = InferOwnerOf(window);
                 if (owner != null && isDialog)
                 {
                     window.Owner = owner;

@@ -9,10 +9,10 @@ namespace SimpleDnsCrypt.ViewModels
     [Export(typeof(FallbackResolversViewModel))]
     public class FallbackResolversViewModel : Screen
     {
-        private string _windowTitle;
-        private ObservableCollection<string> _fallbackResolvers;
-        private string _selectedFallbackResolver;
-        private string _addressInput;
+        private string _windowTitle = string.Empty;
+        private ObservableCollection<string>? _fallbackResolvers;
+        private string? _selectedFallbackResolver;
+        private string _addressInput = string.Empty;
 
 
         [ImportingConstructor]
@@ -34,7 +34,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public ObservableCollection<string> FallbackResolvers
+        public ObservableCollection<string>? FallbackResolvers
         {
             get => _fallbackResolvers;
             set
@@ -44,7 +44,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public string SelectedFallbackResolver
+        public string? SelectedFallbackResolver
         {
             get => _selectedFallbackResolver;
             set
@@ -68,21 +68,23 @@ namespace SimpleDnsCrypt.ViewModels
         {
             var validatedAddress = ValidationHelper.ValidateIpEndpoint(_addressInput);
             if (string.IsNullOrEmpty(validatedAddress)) return;
-            if (FallbackResolvers.Contains(validatedAddress)) return;
-            FallbackResolvers.Add(validatedAddress);
+            _fallbackResolvers ??= new ObservableCollection<string>();
+            if (_fallbackResolvers.Contains(validatedAddress)) return;
+            _fallbackResolvers.Add(validatedAddress);
             AddressInput = string.Empty;
         }
 
         public void RemoveAddress()
         {
             if (string.IsNullOrEmpty(_selectedFallbackResolver)) return;
+            if (_fallbackResolvers == null) return;
             if (_fallbackResolvers.Count == 1) return;
             _fallbackResolvers.Remove(_selectedFallbackResolver);
         }
 
         public void RestoreDefault()
         {
-            FallbackResolvers.Clear();
+            _fallbackResolvers?.Clear();
             FallbackResolvers = new ObservableCollection<string>(Global.DefaultFallbackResolvers);
         }
     }

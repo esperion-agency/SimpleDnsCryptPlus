@@ -66,7 +66,7 @@ namespace Tests
         [Test]
         public void MissingOrNullInterfaceTextIsNotTreatedAsABlacklistHit()
         {
-            Assert.IsFalse(LocalNetworkInterfaceManager.IsFilteredOut(null, null, allowVirtual: false));
+            Assert.IsFalse(LocalNetworkInterfaceManager.IsFilteredOut(null!, null!, allowVirtual: false));
             Assert.IsFalse(LocalNetworkInterfaceManager.IsFilteredOut("", "  ", allowVirtual: false));
         }
 

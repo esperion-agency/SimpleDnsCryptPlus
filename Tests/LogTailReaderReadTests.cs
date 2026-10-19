@@ -13,7 +13,7 @@ namespace Tests
     /// </summary>
     public class LogTailReaderReadTests
     {
-        private string path;
+        private string path = null!;
 
         [SetUp]
         public void SetUp()

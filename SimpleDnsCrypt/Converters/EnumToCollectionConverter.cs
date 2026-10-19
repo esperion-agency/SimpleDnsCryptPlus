@@ -11,11 +11,11 @@ namespace SimpleDnsCrypt.Converters
     [ValueConversion(typeof(Enum), typeof(IEnumerable<ValueDescription>))]
     public class EnumToCollectionConverter : MarkupExtension, IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return EnumHelper.GetAllValuesAndDescriptions(value.GetType());
+            return value == null ? null : EnumHelper.GetAllValuesAndDescriptions(value.GetType());
         }
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return null;
         }

@@ -30,8 +30,8 @@ namespace SimpleDnsCrypt.ViewModels
         private BindableCollection<string> _domainBlacklistRules;
         private BindableCollection<string> _domainWhitelistRules;
 
-        private string _selectedDomainBlacklistEntry;
-        private string _selectedDomainWhitelistEntry;
+        private string? _selectedDomainBlacklistEntry;
+        private string? _selectedDomainWhitelistEntry;
         private string _domainWhitelistRuleFilePath;
         private string _domainBlacklistRuleFilePath;
         private bool _isBlacklistEnabled;
@@ -116,7 +116,7 @@ namespace SimpleDnsCrypt.ViewModels
             set
             {
                 _isBlacklistEnabled = value;
-                ManageDnsCryptBlacklist(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration);
+                ManageDnsCryptBlacklist(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!);
                 NotifyOfPropertyChange(() => IsBlacklistEnabled);
             }
         }
@@ -165,7 +165,10 @@ namespace SimpleDnsCrypt.ViewModels
                     saveAndRestartService = true;
                     //disable blacklist again
                     _isBlacklistEnabled = false;
-                    dnscryptProxyConfiguration.blocked_names.blocked_names_file = null;
+                    if (dnscryptProxyConfiguration.blocked_names != null)
+                    {
+                        dnscryptProxyConfiguration.blocked_names.blocked_names_file = null;
+                    }
                 }
 
                 if (saveAndRestartService)
@@ -209,7 +212,7 @@ namespace SimpleDnsCrypt.ViewModels
 
         #region Whitelist
 
-        public string SelectedDomainWhitelistEntry
+        public string? SelectedDomainWhitelistEntry
         {
             get => _selectedDomainWhitelistEntry;
             set
@@ -370,6 +373,7 @@ namespace SimpleDnsCrypt.ViewModels
                 };
 
                 var metroWindow = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
+                if (metroWindow == null) return;
                 var dialogResult = await metroWindow.ShowInputAsync(LocalizationEx.GetUiString("message_title_new_whitelist_rule", Thread.CurrentThread.CurrentCulture),
                     LocalizationEx.GetUiString("message_content_new_whitelist_rule", Thread.CurrentThread.CurrentCulture), dialogSettings);
 
@@ -400,6 +404,7 @@ namespace SimpleDnsCrypt.ViewModels
                     ColorScheme = MetroDialogColorScheme.Theme
                 };
                 var metroWindow = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
+                if (metroWindow == null) return;
 
                 var dialog = new Controls.BaseMetroDialog();
                 await metroWindow.ShowMetroDialogAsync(dialog, dialogSettings);
@@ -462,6 +467,7 @@ namespace SimpleDnsCrypt.ViewModels
                 };
 
                 var metroWindow = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
+                if (metroWindow == null) return;
                 var dialogResult = await metroWindow.ShowInputAsync(LocalizationEx.GetUiString("message_title_new_blacklist_rule", Thread.CurrentThread.CurrentCulture),
                     LocalizationEx.GetUiString("message_content_new_blacklist_rule", Thread.CurrentThread.CurrentCulture), dialogSettings);
                 if (string.IsNullOrEmpty(dialogResult)) return;
@@ -556,7 +562,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public string SelectedDomainBlacklistEntry
+        public string? SelectedDomainBlacklistEntry
         {
             get => _selectedDomainBlacklistEntry;
             set

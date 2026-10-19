@@ -9,9 +9,9 @@ namespace SimpleDnsCrypt.ViewModels
     public class MetroMessageBoxViewModel : Screen
     {
         private MessageBoxButton _buttons = MessageBoxButton.OK;
-        private string _message;
+        private string _message = string.Empty;
         private BoxType _messageBoxType;
-        private string _title;
+        private string _title = string.Empty;
 
         /// <summary>
         ///     MetroMessageBoxViewModel constructor.

@@ -12,7 +12,7 @@ namespace SimpleDnsCrypt.Utils
         /// Requires at least major.minor.patch: "1.0" is rejected rather than read as "1.0.0", so a
         /// malformed manifest cannot quietly become an upgrade offer.
         /// </summary>
-        public static bool IsNewer(string candidateVersion, Version current)
+        public static bool IsNewer(string candidateVersion, Version? current)
         {
             if (current == null || string.IsNullOrWhiteSpace(candidateVersion))
             {

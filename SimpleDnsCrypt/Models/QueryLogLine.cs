@@ -33,15 +33,16 @@ namespace SimpleDnsCrypt.Models
     {
         private static readonly ILog Log = LogManagerHelper.Factory();
         public DateTime Date { get; set; }
-        public string Address { get; set; }
-        public string Remote { get; set; }
+        // Null when the LTSV field is absent or the line did not have the expected 8 parts (see constructor early return).
+        public string? Address { get; set; }
+        public string? Remote { get; set; }
         public QueryLogLineType Type { get; set; }
         public QueryLogReturnCode ReturnCode { get; set; }
         public bool Cached { get; set; }
         public string CachedText => Cached ? "cached" : "live";
         public long Duration { get; set; }
         public string DurationText => $"{Duration}ms";
-        public string Server { get; set; }
+        public string? Server { get; set; }
 
         public QueryLogLine(string line)
         {

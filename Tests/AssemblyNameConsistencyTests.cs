@@ -34,7 +34,7 @@ namespace Tests
 
             Assert.IsNotNull(dir, "could not locate the solution root from " + AppContext.BaseDirectory);
 
-            return dir.FullName;
+            return dir!.FullName;
         }
 
         private static string DeclaredAssemblyName()

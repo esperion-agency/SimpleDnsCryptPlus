@@ -24,7 +24,7 @@ namespace Tests
     [TestFixture]
     public class InterfaceDnsSnapshotTests
     {
-        private string root;
+        private string root = null!;
 
         [SetUp]
         public void SetUp()

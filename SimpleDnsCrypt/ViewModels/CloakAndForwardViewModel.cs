@@ -29,8 +29,8 @@ namespace SimpleDnsCrypt.ViewModels
 
         private bool _isCloakingEnabled;
         private bool _isForwardingEnabled;
-        private Rule _selectedCloakingEntry;
-        private Rule _selectedForwardingEntry;
+        private Rule? _selectedCloakingEntry;
+        private Rule? _selectedForwardingEntry;
 
         private string _cloakingRulesFile;
         private string _forwardingRulesFile;
@@ -133,7 +133,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public Rule SelectedForwardingEntry
+        public Rule? SelectedForwardingEntry
         {
             get => _selectedForwardingEntry;
             set
@@ -162,7 +162,7 @@ namespace SimpleDnsCrypt.ViewModels
             set
             {
                 _isForwardingEnabled = value;
-                ManageDnsCryptForwarding(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration);
+                ManageDnsCryptForwarding(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!);
                 NotifyOfPropertyChange(() => IsForwardingEnabled);
             }
         }
@@ -231,6 +231,7 @@ namespace SimpleDnsCrypt.ViewModels
             try
             {
                 var metroWindow = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
+                if (metroWindow == null) return;
                 var addRuleWindow = new AddRuleWindow(RuleWindowType.Forwarding);
                 var addRuleWindowResult = await metroWindow.ShowChildWindowAsync<AddRuleWindowResult>(addRuleWindow);
 
@@ -465,7 +466,7 @@ namespace SimpleDnsCrypt.ViewModels
             set
             {
                 _isCloakingEnabled = value;
-                ManageDnsCryptCloaking(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration);
+                ManageDnsCryptCloaking(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!);
                 NotifyOfPropertyChange(() => IsCloakingEnabled);
             }
         }
@@ -496,7 +497,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public Rule SelectedCloakingEntry
+        public Rule? SelectedCloakingEntry
         {
             get => _selectedCloakingEntry;
             set
@@ -525,6 +526,7 @@ namespace SimpleDnsCrypt.ViewModels
             try
             {
                 var metroWindow = Application.Current.Windows.OfType<MetroWindow>().FirstOrDefault();
+                if (metroWindow == null) return;
                 var addRuleWindow = new AddRuleWindow(RuleWindowType.Cloaking);
                 var addRuleWindowResult = await metroWindow.ShowChildWindowAsync<AddRuleWindowResult>(addRuleWindow);
 

@@ -6,9 +6,9 @@ namespace SimpleDnsCrypt.ViewModels
     [Export(typeof(SettingsViewModel))]
     public class SettingsViewModel : Screen
     {
-        private readonly IWindowManager _windowManager;
-        private readonly IEventAggregator _events;
-        private string _windowTitle;
+        private readonly IWindowManager? _windowManager;
+        private readonly IEventAggregator? _events;
+        private string _windowTitle = string.Empty;
         private bool _isAdvancedSettingsTabVisible;
         private bool _isStartInTrayEnabled;
         private bool _isTrayModeEnabled;

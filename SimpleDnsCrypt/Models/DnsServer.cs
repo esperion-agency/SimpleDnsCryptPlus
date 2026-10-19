@@ -6,7 +6,7 @@ namespace SimpleDnsCrypt.Models
     public class DnsServer : PropertyChangedBase
     {
         private NetworkInterfaceComponent _type;
-        private string _address;
+        private string _address = string.Empty;
 
         public NetworkInterfaceComponent Type
         {

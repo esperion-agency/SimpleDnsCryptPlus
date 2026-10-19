@@ -11,10 +11,10 @@ namespace SimpleDnsCrypt.Converters
     /// </summary>
     public class InterfaceTypeToIconConverter : IValueConverter
     {
-        public object EthernetIconOffline { get; set; }
-        public object EthernetIcon { get; set; }
-        public object WifiIcon { get; set; }
-        public object WifiIconOffline { get; set; }
+        public object EthernetIconOffline { get; set; } = string.Empty;
+        public object EthernetIcon { get; set; } = string.Empty;
+        public object WifiIcon { get; set; } = string.Empty;
+        public object WifiIconOffline { get; set; } = string.Empty;
 
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

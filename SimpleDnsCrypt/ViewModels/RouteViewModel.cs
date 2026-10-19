@@ -11,7 +11,7 @@ namespace SimpleDnsCrypt.ViewModels
     [Export(typeof(RouteViewModel))]
     public class RouteViewModel : Screen, IDropTarget
     {
-        private string _resolver;
+        private string _resolver = string.Empty;
 
         [ImportingConstructor]
         public RouteViewModel()
@@ -28,7 +28,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        private ObservableCollection<StampFileEntry> _route;
+        private ObservableCollection<StampFileEntry> _route = new();
 
         public ObservableCollection<StampFileEntry> Route
         {
@@ -40,7 +40,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public BindableCollection<StampFileEntry> Relays { get; internal set; }
+        public BindableCollection<StampFileEntry> Relays { get; internal set; } = new();
 
         public void Remove(StampFileEntry stampFileEntry)
         {
@@ -61,7 +61,7 @@ namespace SimpleDnsCrypt.ViewModels
 
         void IDropTarget.Drop(IDropInfo dropInfo)
         {
-            var stampFileEntry = (StampFileEntry)dropInfo.Data;
+            if (dropInfo.Data is not StampFileEntry stampFileEntry) return;
             if (Route.Where(s => s.Name.Equals(stampFileEntry.Name)).FirstOrDefault() != null) return;
             Route.Add(stampFileEntry);
         }

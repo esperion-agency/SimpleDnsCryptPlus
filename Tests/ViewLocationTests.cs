@@ -26,7 +26,7 @@ namespace Tests
     [Apartment(ApartmentState.STA)]
     public class ViewLocationTests
     {
-        private static System.Windows.Application _application;
+        private static System.Windows.Application _application = null!;
 
         [OneTimeSetUp]
         public void RegisterCaliburnConventionsTheSameWayTheAppDoes()
@@ -84,7 +84,7 @@ namespace Tests
                 Assert.IsTrue(typeof(System.Windows.UIElement).IsAssignableFrom(located),
                     $"{located.Name} located for {viewModelType.Name} is not a UIElement");
 
-                object built;
+                object? built;
 
                 try
                 {

@@ -33,6 +33,20 @@ apply anything on the Route tab.
       against ticking "show hidden cards").
 - [ ] Every tab opens: Main, Resolvers, Advanced settings, Query log, Domain block log, Address block
       log, Domain blacklist, Address blacklist, Cloak & forward, About.
+- [ ] **A window appears on launch, in both startup modes.** .NET user settings are XML, under a folder
+      whose name is a per-install hash — find it before editing anything:
+
+      ```powershell
+      Get-ChildItem "$env:LOCALAPPDATA\SimpleDnsCrypt" -Recurse -Filter user.config
+      ```
+
+      On a machine that has run the 0.8.2 generation that is
+      `%LOCALAPPDATA%\SimpleDnsCrypt\SimpleDnsCrypt_Url_<hash>\0.8.2.0\user.config`; close the app, set
+      `TrayMode` / `StartInTray` there, and relaunch each way (or simply toggle both in the Settings tab,
+      which writes the same file). Tray mode must put the tray icon on screen and the main window behind
+      it; normal mode must show the main window. The nullable pass added guards around exactly this code
+      path in `LoaderViewModel` — they cannot fire while the DI container behaves, which is precisely why
+      they need looking at rather than compiling.
 - [ ] Tray icon: right-click and left-click. **The tray menu item added in the localization pass is
       now `{lex:Loc Key=tray_menu_show_window}`. It must read "Show Window", not blank.** A blank
       here means a key that does not resolve, and `OutputMissingKeys="False"` renders that as nothing.

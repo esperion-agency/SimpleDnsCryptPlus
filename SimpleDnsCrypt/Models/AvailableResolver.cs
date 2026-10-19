@@ -16,15 +16,16 @@ namespace SimpleDnsCrypt.Models
     public class AvailableResolver : PropertyChangedBase
     {
         private bool _isInServerList;
-        private string _name;
-        private string _protocol;
+        private string _name = string.Empty;
+        private string _protocol = string.Empty;
         private bool _dnsSec;
         private bool _noLog;
         private bool _noFilter;
-        private string _description;
+        private string _description = string.Empty;
         private bool _ipv6;
-        private List<int> _ports;
-        private Route _route;
+        private List<int> _ports = new List<int>();
+        // Only resolvers listed in anonymized_dns get a route; MainViewModel checks Route for null.
+        private Route? _route;
         private RouteState _routeState;
 
         [JsonIgnore]
@@ -74,7 +75,7 @@ namespace SimpleDnsCrypt.Models
         }
 
         [JsonIgnore]
-        public Route Route
+        public Route? Route
         {
             get => _route;
             set

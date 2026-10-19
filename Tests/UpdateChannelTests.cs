@@ -19,7 +19,7 @@ namespace Tests
     /// </summary>
     public class UpdateChannelTests
     {
-        private string dir;
+        private string dir = null!;
 
         [SetUp]
         public void SetUp()
@@ -170,7 +170,7 @@ namespace Tests
 
             Assert.IsNotNull(dir, "could not locate the solution root");
 
-            return dir.FullName;
+            return dir!.FullName;
         }
 
         [Test]
@@ -184,7 +184,8 @@ namespace Tests
             foreach (var raw in uris)
             {
                 Assert.IsTrue(Uri.TryCreate(raw, UriKind.Absolute, out var uri), "not a URI: " + raw);
-                Assert.AreEqual(Uri.UriSchemeHttps, uri.Scheme, "plain http would let the network path rewrite the update");
+                Assert.That(uri, Is.Not.Null, "TryCreate must produce the URI it returned true for");
+                Assert.AreEqual(Uri.UriSchemeHttps, uri!.Scheme, "plain http would let the network path rewrite the update");
                 Assert.AreEqual("github.com", uri.Host);
                 Assert.IsTrue(uri.AbsolutePath.StartsWith("/xardyx2/SimpleDnsCryptPlus/releases/"),
                     "the updater must read this project's releases, not another's: " + raw);
@@ -221,7 +222,7 @@ namespace Tests
 
             Assert.IsNotNull(manifest, "a manifest in the published shape must parse");
             Assert.IsTrue(UpdateArtifactVerifier.VerifyFile(
-                payload, manifest.SignatureArmored, pub), "and its signature must still verify");
+                payload, manifest!.SignatureArmored, pub), "and its signature must still verify");
 
             // A manifest assembled on Windows carries CRLF inside that string; the reader must not
             // care which line endings a middle tool chose.
@@ -230,7 +231,7 @@ namespace Tests
 
             Assert.IsNotNull(crlfManifest, "a CRLF manifest must parse");
             Assert.IsTrue(UpdateArtifactVerifier.VerifyFile(
-                payload, crlfManifest.SignatureArmored, pub),
+                payload, crlfManifest!.SignatureArmored, pub),
                 "line endings inside the armored signature must not change the verdict");
         }
 
@@ -270,7 +271,7 @@ namespace Tests
         {
             var current = new Version(1, 0, 0);
 
-            Assert.IsFalse(UpdateChecker.IsNewer(null, current));
+            Assert.IsFalse(UpdateChecker.IsNewer(null!, current));
             Assert.IsFalse(UpdateChecker.IsNewer("", current));
             Assert.IsFalse(UpdateChecker.IsNewer("nightly", current));
             Assert.IsFalse(UpdateChecker.IsNewer("1.0", current), "partial versions are rejected, not guessed");
@@ -291,14 +292,14 @@ namespace Tests
             var manifest = UpdateManifest.Parse(good);
 
             Assert.IsNotNull(manifest);
-            Assert.AreEqual("1.0.1", manifest.Version);
+            Assert.AreEqual("1.0.1", manifest!.Version);
             Assert.AreEqual("zip", manifest.Format);
             Assert.IsTrue(manifest.DownloadUri.IsAbsoluteUri);
             Assert.AreEqual(64, manifest.Sha256.Length);
 
             Assert.IsNull(UpdateManifest.Parse(@"{""version"":""1.0.1""}"), "missing fields must not parse");
             Assert.IsNull(UpdateManifest.Parse("not json"), "malformed json must not parse");
-            Assert.IsNull(UpdateManifest.Parse(null));
+            Assert.IsNull(UpdateManifest.Parse(null!));
             Assert.IsNull(UpdateManifest.Parse(@"{
               ""format"": ""zip"", ""version"": ""1.0.1"", ""releaseDate"": ""2026-09-27"",
               ""downloadUri"": ""https://example.com/a.zip"", ""sha256"": ""ZZZ"",

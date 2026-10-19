@@ -12,8 +12,8 @@ namespace SimpleDnsCrypt.Models
 {
     public class DnscryptProxyConfiguration : PropertyChangedBase
     {
-        private ObservableCollection<string> _server_names;
-        private ObservableCollection<string> _listen_addresses;
+        private ObservableCollection<string>? _server_names;
+        private ObservableCollection<string>? _listen_addresses;
         private int _max_clients;
         private bool _require_nofilter;
         private bool _ipv4_servers;
@@ -23,21 +23,21 @@ namespace SimpleDnsCrypt.Models
         private bool _require_dnssec;
         private bool _require_nolog;
         private bool _force_tcp;
-        private string _http_proxy;
+        private string? _http_proxy;
         private int _timeout;
         private int _keepalive;
-        private string _lb_strategy;
+        private string? _lb_strategy;
         private bool _lb_estimator;
         private int _cert_refresh_delay;
         private bool _dnscrypt_ephemeral_keys;
         private bool _tls_disable_session_tickets;
         private bool _log;
         private int _log_level;
-        private string _log_file;
-        private Dictionary<string, Source> _sources;
+        private string? _log_file;
+        private Dictionary<string, Source>? _sources;
         private bool _use_syslog;
         private int _netprobe_timeout;
-        private string _netprobe_address;
+        private string? _netprobe_address;
         private bool _offline_mode;
         private int _log_files_max_size;
         private int _log_files_max_age;
@@ -46,21 +46,21 @@ namespace SimpleDnsCrypt.Models
         private bool _block_unqualified;
         private bool _block_undelegated;
         private int _reject_ttl;
-        private string _forwarding_rules;
-        private string _cloaking_rules;
+        private string? _forwarding_rules;
+        private string? _cloaking_rules;
         private int _cache_neg_min_ttl;
         private int _cache_neg_max_ttl;
         private int _cache_max_ttl;
         private int _cache_min_ttl;
         private int _cache_size;
         private bool _cache;
-        private ObservableCollection<string> _fallback_resolvers;
+        private ObservableCollection<string>? _fallback_resolvers;
         private bool _ignore_system_dns;
-        private Dictionary<string, Static> _static;
-        private string _proxy;
-        private ObservableCollection<string> _disabled_server_names;
-        private string _blocked_query_response;
-        private Dictionary<string, CustomServer> _customServers;
+        private Dictionary<string, Static>? _static;
+        private string? _proxy;
+        private ObservableCollection<string>? _disabled_server_names;
+        private string? _blocked_query_response;
+        private Dictionary<string, CustomServer>? _customServers;
 
         [TomlIgnore]
         public new bool IsNotifying
@@ -69,7 +69,7 @@ namespace SimpleDnsCrypt.Models
             set => base.IsNotifying = value;
         }
 
-        public Dictionary<string, CustomServer> @static
+        public Dictionary<string, CustomServer>? @static
         {
             get => _customServers ??= new Dictionary<string, CustomServer>();
             set
@@ -82,7 +82,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     List of servers to use.
         /// </summary>
-        public ObservableCollection<string> server_names
+        public ObservableCollection<string>? server_names
         {
             get => _server_names;
             set
@@ -95,7 +95,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     List of local addresses and ports to listen to. Can be IPv4 and/or IPv6.
         /// </summary>
-        public ObservableCollection<string> listen_addresses
+        public ObservableCollection<string>? listen_addresses
         {
             get => _listen_addresses;
             set
@@ -147,7 +147,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Server names to avoid even if they match all criteria
         /// </summary>
-        public ObservableCollection<string> disabled_server_names
+        public ObservableCollection<string>? disabled_server_names
         {
             get => _disabled_server_names;
             set
@@ -163,7 +163,7 @@ namespace SimpleDnsCrypt.Models
         ///		Using the `hinfo` option means that some responses will be lies.
         ///		Unfortunately, the `hinfo` option appears to be required for Android 8+
         /// </summary>
-        public string blocked_query_response
+        public string? blocked_query_response
         {
             get => _blocked_query_response;
             set
@@ -299,7 +299,7 @@ namespace SimpleDnsCrypt.Models
         /// Uncomment the following line to route all TCP connections to a local Tor node
         /// Tor doesn't support UDP, so set `force_tcp` to `true` as well.
         /// </summary>
-        public string proxy
+        public string? proxy
         {
             get => _proxy;
             set
@@ -313,7 +313,7 @@ namespace SimpleDnsCrypt.Models
         /// HTTP/HTTPS proxy
         /// Only for DoH servers
         /// </summary>
-        public string http_proxy
+        public string? http_proxy
         {
             get => _http_proxy;
             set
@@ -352,7 +352,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         /// Load-balancing strategy: 'p2' (default), 'ph', 'first' or 'random'
         /// </summary>
-        public string lb_strategy
+        public string? lb_strategy
         {
             get => _lb_strategy;
             set
@@ -402,7 +402,7 @@ namespace SimpleDnsCrypt.Models
         /// On other operating systems, the connection will be initialized
         /// but nothing will be sent at all.
         /// </summary>
-        public string netprobe_address
+        public string? netprobe_address
         {
             get => _netprobe_address;
             set
@@ -456,7 +456,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     log file for the application.
         /// </summary>
-        public string log_file
+        public string? log_file
         {
             get => _log_file;
             set
@@ -509,7 +509,7 @@ namespace SimpleDnsCrypt.Models
         /// 	
         /// 	If more than one resolver is specified, they will be tried in sequence.
         /// </summary>
-        public ObservableCollection<string> fallback_resolvers
+        public ObservableCollection<string>? fallback_resolvers
         {
             get => _fallback_resolvers;
             set
@@ -630,7 +630,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Forwarding rule file.
         /// </summary>
-        public string forwarding_rules
+        public string? forwarding_rules
         {
             get => _forwarding_rules;
             set
@@ -643,7 +643,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Cloaking rule file.
         /// </summary>
-        public string cloaking_rules
+        public string? cloaking_rules
         {
             get => _cloaking_rules;
             set
@@ -734,30 +734,30 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Log client queries to a file.
         /// </summary>
-        public QueryLog query_log { get; set; }
+        public QueryLog? query_log { get; set; }
 
         /// <summary>
         ///     Log queries for nonexistent zones.
         /// </summary>
-        public NxLog nx_log { get; set; }
+        public NxLog? nx_log { get; set; }
 
         /// <summary>
         ///     Pattern-based blocking (blacklists).
         /// </summary>
-        public Blacklist blocked_names { get; set; }
+        public Blacklist? blocked_names { get; set; }
 
         /// <summary>
         ///     Pattern-based IP blocking (IP blacklists).
         /// </summary>
-        public Blacklist blocked_ips { get; set; }
+        public Blacklist? blocked_ips { get; set; }
 
-        public AnonymizedDns anonymized_dns { get; set; }
+        public AnonymizedDns? anonymized_dns { get; set; }
 
-        public BrokenImplementations broken_implementations { get; set; }
+        public BrokenImplementations? broken_implementations { get; set; }
 
         /// <summary>
         /// </summary>
-        public Dictionary<string, Source> sources
+        public Dictionary<string, Source>? sources
         {
             get => _sources;
             set
@@ -770,7 +770,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Remote lists of available servers.
         /// </summary>
-        public Dictionary<string, Static> Static
+        public Dictionary<string, Static>? Static
         {
             get => _static;
             set
@@ -790,10 +790,10 @@ namespace SimpleDnsCrypt.Models
             set => base.IsNotifying = value;
         }
 
-        private List<Route> _routes;
+        private List<Route>? _routes;
         private bool _skip_incompatible;
 
-        public List<Route> routes
+        public List<Route>? routes
         {
             get => _routes;
             set
@@ -826,10 +826,10 @@ namespace SimpleDnsCrypt.Models
             set => base.IsNotifying = value;
         }
 
-        private List<string> _broken_query_padding;
-        private List<string> _fragments_blocked;
+        private List<string>? _broken_query_padding;
+        private List<string>? _fragments_blocked;
 
-        public List<string> broken_query_padding
+        public List<string>? broken_query_padding
         {
             get => _broken_query_padding;
             set
@@ -839,7 +839,7 @@ namespace SimpleDnsCrypt.Models
             }
         }
 
-        public List<string> fragments_blocked
+        public List<string>? fragments_blocked
         {
             get => _fragments_blocked;
             set
@@ -859,9 +859,9 @@ namespace SimpleDnsCrypt.Models
             set => base.IsNotifying = value;
         }
 
-        private string _server_name;
+        private string? _server_name;
 
-        public string server_name
+        public string? server_name
         {
             get => _server_name;
             set
@@ -871,9 +871,9 @@ namespace SimpleDnsCrypt.Models
             }
         }
 
-        private ObservableCollection<string> _via;
+        private ObservableCollection<string>? _via;
 
-        public ObservableCollection<string> via
+        public ObservableCollection<string>? via
         {
             get => _via;
             set
@@ -889,9 +889,9 @@ namespace SimpleDnsCrypt.Models
     /// </summary>
     public class QueryLog : PropertyChangedBase
     {
-        private string _format;
-        private string _file;
-        private ObservableCollection<string> _ignored_qtypes;
+        private string? _format;
+        private string? _file;
+        private ObservableCollection<string>? _ignored_qtypes;
 
         [TomlIgnore]
         public new bool IsNotifying
@@ -903,7 +903,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Query log format (SimpleDnsCrypt: ltsv).
         /// </summary>
-        public string format
+        public string? format
         {
             get => _format;
             set
@@ -916,7 +916,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Path to the query log file (absolute, or relative to the same directory as the executable file).
         /// </summary>
-        public string file
+        public string? file
         {
             get => _file;
             set
@@ -929,7 +929,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Do not log these query types, to reduce verbosity. Keep empty to log everything.
         /// </summary>
-        public ObservableCollection<string> ignored_qtypes
+        public ObservableCollection<string>? ignored_qtypes
         {
             get => _ignored_qtypes;
             set
@@ -945,8 +945,8 @@ namespace SimpleDnsCrypt.Models
     /// </summary>
     public class NxLog : PropertyChangedBase
     {
-        private string _format;
-        private string _file;
+        private string? _format;
+        private string? _file;
 
         [TomlIgnore]
         public new bool IsNotifying
@@ -958,7 +958,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Query log format (SimpleDnsCrypt: ltsv).
         /// </summary>
-        public string format
+        public string? format
         {
             get => _format;
             set
@@ -971,7 +971,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Path to the query log file (absolute, or relative to the same directory as the executable file).
         /// </summary>
-        public string file
+        public string? file
         {
             get => _file;
             set
@@ -987,9 +987,9 @@ namespace SimpleDnsCrypt.Models
     /// </summary>
     public class Blacklist : PropertyChangedBase
     {
-        private string _log_format;
-        private string _blocked_names_file;
-        private string _log_file;
+        private string? _log_format;
+        private string? _blocked_names_file;
+        private string? _log_file;
 
         [TomlIgnore]
         public new bool IsNotifying
@@ -1001,7 +1001,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Path to the file of blocking rules.
         /// </summary>
-        public string blocked_names_file
+        public string? blocked_names_file
         {
             get => _blocked_names_file;
             set
@@ -1014,7 +1014,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Path to a file logging blocked queries.
         /// </summary>
-        public string log_file
+        public string? log_file
         {
             get => _log_file;
             set
@@ -1027,7 +1027,7 @@ namespace SimpleDnsCrypt.Models
         /// <summary>
         ///     Log format (SimpleDnsCrypt: ltsv).
         /// </summary>
-        public string log_format
+        public string? log_format
         {
             get => _log_format;
             set
@@ -1040,7 +1040,7 @@ namespace SimpleDnsCrypt.Models
 
     public class CustomServer
     {
-        public string Stamp { get; set; }
+        public string? Stamp { get; set; }
     }
 
     public class Source : PropertyChangedBase
@@ -1052,16 +1052,16 @@ namespace SimpleDnsCrypt.Models
             set => base.IsNotifying = value;
         }
 
-        private ObservableCollection<Stamp> _stamps;
-        public string[] urls { get; set; }
-        public string minisign_key { get; set; }
-        public string cache_file { get; set; }
-        public string format { get; set; }
+        private ObservableCollection<Stamp>? _stamps;
+        public string[]? urls { get; set; }
+        public string? minisign_key { get; set; }
+        public string? cache_file { get; set; }
+        public string? format { get; set; }
         public int refresh_delay { get; set; }
-        public string prefix { get; set; }
+        public string? prefix { get; set; }
 
         [TomlIgnore]
-        public ObservableCollection<Stamp> Stamps
+        public ObservableCollection<Stamp>? Stamps
         {
             get => _stamps;
             set
@@ -1074,7 +1074,7 @@ namespace SimpleDnsCrypt.Models
 
     public class Static
     {
-        public string stamp { get; set; }
+        public string? stamp { get; set; }
     }
 }
 #pragma warning restore IDE1006 // Naming Styles

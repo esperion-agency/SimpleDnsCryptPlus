@@ -6,11 +6,11 @@ namespace SimpleDnsCrypt.Models
 {
     public class LocalNetworkInterface : PropertyChangedBase
     {
-        private string _name;
+        private string _name = string.Empty;
         private NetworkInterfaceType _type;
         private OperationalStatus _operationalStatus;
-        private string _description;
-        private List<DnsServer> _dns;
+        private string _description = string.Empty;
+        private List<DnsServer> _dns = new List<DnsServer>();
         private bool _ipv6Support;
         private bool _ipv4Support;
         private bool _useDnsCrypt;
@@ -130,6 +130,6 @@ namespace SimpleDnsCrypt.Models
             }
         }
 
-        public string IpAddresses { get; set; }
+        public string IpAddresses { get; set; } = string.Empty;
     }
 }

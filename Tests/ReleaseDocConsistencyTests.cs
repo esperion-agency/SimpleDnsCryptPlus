@@ -36,7 +36,7 @@ namespace Tests
 
             Assert.IsNotNull(dir, "could not locate the solution root from " + AppContext.BaseDirectory);
 
-            return dir.FullName;
+            return dir!.FullName;
         }
 
         private static string Readme()
@@ -54,7 +54,7 @@ namespace Tests
             Assert.IsTrue(document.RootElement.TryGetProperty("version", out var version),
                 $"tools/{LockFileName} has no \"version\" property; if it was renamed, this guard must follow");
 
-            return version.GetString();
+            return version.GetString()!;
         }
 
         [Test]

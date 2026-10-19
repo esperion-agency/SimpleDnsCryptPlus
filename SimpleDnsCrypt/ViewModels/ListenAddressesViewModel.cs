@@ -9,10 +9,10 @@ namespace SimpleDnsCrypt.ViewModels
     [Export(typeof(ListenAddressesViewModel))]
     public class ListenAddressesViewModel : Screen
     {
-        private string _windowTitle;
-        private ObservableCollection<string> _listenAddresses;
-        private string _selectedListenAddress;
-        private string _addressInput;
+        private string _windowTitle = string.Empty;
+        private ObservableCollection<string>? _listenAddresses;
+        private string? _selectedListenAddress;
+        private string _addressInput = string.Empty;
 
 
         [ImportingConstructor]
@@ -34,7 +34,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public ObservableCollection<string> ListenAddresses
+        public ObservableCollection<string>? ListenAddresses
         {
             get => _listenAddresses;
             set
@@ -44,7 +44,7 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public string SelectedListenAddress
+        public string? SelectedListenAddress
         {
             get => _selectedListenAddress;
             set
@@ -68,23 +68,26 @@ namespace SimpleDnsCrypt.ViewModels
         {
             var validatedAddress = ValidationHelper.ValidateIpEndpoint(_addressInput);
             if (string.IsNullOrEmpty(validatedAddress)) return;
-            if (ListenAddresses.Contains(validatedAddress)) return;
-            ListenAddresses.Add(validatedAddress);
+            _listenAddresses ??= new ObservableCollection<string>();
+            if (_listenAddresses.Contains(validatedAddress)) return;
+            _listenAddresses.Add(validatedAddress);
             AddressInput = string.Empty;
         }
 
         public void RemoveAddress()
         {
             if (string.IsNullOrEmpty(_selectedListenAddress)) return;
+            if (_listenAddresses == null) return;
             if (_listenAddresses.Count == 1) return;
             _listenAddresses.Remove(_selectedListenAddress);
         }
 
         public void RestoreDefault()
         {
-            ListenAddresses.Clear();
-            ListenAddresses.Add(Global.DefaultResolverIpv4);
-            ListenAddresses.Add(Global.DefaultResolverIpv6);
+            _listenAddresses ??= new ObservableCollection<string>();
+            _listenAddresses.Clear();
+            _listenAddresses.Add(Global.DefaultResolverIpv4);
+            _listenAddresses.Add(Global.DefaultResolverIpv6);
         }
     }
 }

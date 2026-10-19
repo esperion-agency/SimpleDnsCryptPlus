@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using SimpleDnsCrypt.Config;
@@ -44,13 +45,17 @@ public static class PatchHelper
 
             if (oldVersion <= 0)
             {
-                var sources = DnscryptProxyConfigurationManager.DnscryptProxyConfiguration.sources;
+                // LoadConfiguration() above returned true, which is the only way here, and it assigns
+                // the instance before it returns.
+                var configuration = DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!;
+                var sources = configuration.sources ??= new Dictionary<string, Source>();
 
                 // Replace a source list only when it is still the untouched v2 default, or is
                 // missing entirely. Rewriting unconditionally would silently discard a user's own
                 // resolver list.
                 if (!sources.TryGetValue("public-resolvers", out var publicResolvers) ||
-                    ResolverListMigration.IsOutdatedDefaultList(publicResolvers.urls))
+                    publicResolvers is null ||
+                    ResolverListMigration.IsOutdatedDefaultList(publicResolvers.urls ?? Array.Empty<string>()))
                 {
                     sources["public-resolvers"] = new Source
                     {
@@ -67,7 +72,8 @@ public static class PatchHelper
                 }
 
                 if (!sources.TryGetValue("relays", out var relays) ||
-                    ResolverListMigration.IsOutdatedDefaultList(relays.urls))
+                    relays is null ||
+                    ResolverListMigration.IsOutdatedDefaultList(relays.urls ?? Array.Empty<string>()))
                 {
                     sources["relays"] = new Source
                     {

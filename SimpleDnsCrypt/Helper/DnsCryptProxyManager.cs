@@ -6,6 +6,7 @@ using SimpleDnsCrypt.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using System.Security.AccessControl;
 using System.ServiceProcess;
@@ -31,15 +32,21 @@ namespace SimpleDnsCrypt.Helper
         private const string DnsCryptProxyServiceName = "dnscrypt-proxy";
 
         public static IObservable<ServiceStatus> ServiceStatusTracker { get; } = Observable.Interval(TimeSpan.FromSeconds(1)).Select(_ =>
-            (TryGetDnsCryptService(out var service), service.Status) switch
+        {
+            if (!TryGetDnsCryptService(out var service))
             {
-                (false, _) => ServiceStatus.NotInstalled,
-                (true, ServiceControllerStatus.Running) => ServiceStatus.Running,
-                (true, ServiceControllerStatus.StartPending) => ServiceStatus.Starting,
-                _ => ServiceStatus.Stopped
-            }).Publish().RefCount();
+                return ServiceStatus.NotInstalled;
+            }
 
-        private static bool TryGetDnsCryptService(out ServiceController service)
+            return service.Status switch
+            {
+                ServiceControllerStatus.Running => ServiceStatus.Running,
+                ServiceControllerStatus.StartPending => ServiceStatus.Starting,
+                _ => ServiceStatus.Stopped
+            };
+        }).Publish().RefCount();
+
+        private static bool TryGetDnsCryptService([NotNullWhen(true)] out ServiceController? service)
         {
             try
             {

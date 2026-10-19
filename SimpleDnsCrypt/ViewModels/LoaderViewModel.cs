@@ -22,14 +22,14 @@ namespace SimpleDnsCrypt.ViewModels
     [Export(typeof(LoaderViewModel))]
     public class LoaderViewModel : Screen
     {
-        private readonly IWindowManager _windowManager;
-        private readonly IEventAggregator _events;
+        private readonly IWindowManager? _windowManager;
+        private readonly IEventAggregator? _events;
         private static readonly ILog Log = LogManagerHelper.Factory();
-        private readonly MainViewModel _mainViewModel;
-        private readonly SystemTrayViewModel _systemTrayViewModel;
+        private readonly MainViewModel? _mainViewModel;
+        private readonly SystemTrayViewModel? _systemTrayViewModel;
 
-        private string _progressText;
-        private string _titleText;
+        private string _progressText = string.Empty;
+        private string _titleText = string.Empty;
 
         public LoaderViewModel()
         {
@@ -91,7 +91,10 @@ namespace SimpleDnsCrypt.ViewModels
                     ProgressText =
                         string.Format(LocalizationEx.GetUiString("loader_successfully_loaded", Thread.CurrentThread.CurrentCulture),
                             Global.DnsCryptConfigurationFileName);
-                    _mainViewModel.DnscryptProxyConfiguration = DnscryptProxyConfigurationManager.DnscryptProxyConfiguration;
+                    if (_mainViewModel != null)
+                    {
+                        _mainViewModel.DnscryptProxyConfiguration = DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!;
+                    }
                 }
                 else
                 {
@@ -104,35 +107,45 @@ namespace SimpleDnsCrypt.ViewModels
 
                 ProgressText = LocalizationEx.GetUiString("loader_loading_network_cards", Thread.CurrentThread.CurrentCulture);
 
-                var dnsServer = DnscryptProxyConfigurationManager.DnscryptProxyConfiguration.listen_addresses.Contains(Global.GlobalResolver)
+                var dnsServer = DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!.listen_addresses?.Contains(Global.GlobalResolver) == true
                     ? new List<string>
                     {
                         Global.DefaultResolverIpv4,
                         Global.DefaultResolverIpv6
                     }
-                    : DnscryptProxyConfigurationManager.DnscryptProxyConfiguration.listen_addresses.ToList();
+                    : DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!.listen_addresses?.ToList() ?? new List<string>();
                 var localNetworkInterfaces = LocalNetworkInterfaceManager.GetLocalNetworkInterfaces(dnsServer);
 
-                _mainViewModel.LocalNetworkInterfaces = new BindableCollection<LocalNetworkInterface>();
-                _mainViewModel.LocalNetworkInterfaces.AddRange(localNetworkInterfaces);
-                _mainViewModel.Initialize();
+                if (_mainViewModel != null)
+                {
+                    _mainViewModel.LocalNetworkInterfaces = new BindableCollection<LocalNetworkInterface>();
+                    _mainViewModel.LocalNetworkInterfaces.AddRange(localNetworkInterfaces);
+                    _mainViewModel.Initialize();
+                }
                 ProgressText = LocalizationEx.GetUiString("loader_starting", Thread.CurrentThread.CurrentCulture);
 
-                if (Properties.Settings.Default.TrayMode)
+                var windowManager = _windowManager;
+                var mainViewModel = _mainViewModel;
+                var systemTrayViewModel = _systemTrayViewModel;
+
+                if (windowManager != null && mainViewModel != null && systemTrayViewModel != null)
                 {
-                    await Execute.OnUIThreadAsync(() => _windowManager.ShowWindowAsync(_systemTrayViewModel));
-                    if (Properties.Settings.Default.StartInTray)
+                    if (Properties.Settings.Default.TrayMode)
                     {
-                        Execute.OnUIThread(() => _systemTrayViewModel.HideWindow());
+                        await Execute.OnUIThreadAsync(() => windowManager.ShowWindowAsync(systemTrayViewModel));
+                        if (Properties.Settings.Default.StartInTray)
+                        {
+                            Execute.OnUIThread(() => systemTrayViewModel.HideWindow());
+                        }
+                        else
+                        {
+                            await Execute.OnUIThreadAsync(() => windowManager.ShowWindowAsync(mainViewModel));
+                        }
                     }
                     else
                     {
-                        await Execute.OnUIThreadAsync(() => _windowManager.ShowWindowAsync(_mainViewModel));
+                        await Execute.OnUIThreadAsync(() => windowManager.ShowWindowAsync(mainViewModel));
                     }
-                }
-                else
-                {
-                    await Execute.OnUIThreadAsync(() => _windowManager.ShowWindowAsync(_mainViewModel));
                 }
 
                 await TryCloseAsync(true);
@@ -186,12 +199,18 @@ namespace SimpleDnsCrypt.ViewModels
                                    languages.SingleOrDefault(l => l.ShortCode.Equals(LocalizeDictionary.Instance.Culture.Name));
 
 
-            _mainViewModel = new MainViewModel(_windowManager, _events)
+            var mainViewModel = new MainViewModel(windowManager, events)
             {
-                Languages = languages,
-                SelectedLanguage = selectedLanguage
+                Languages = languages
             };
-            _systemTrayViewModel = new SystemTrayViewModel(_windowManager, _events, _mainViewModel);
+
+            if (selectedLanguage != null)
+            {
+                mainViewModel.SelectedLanguage = selectedLanguage;
+            }
+
+            _mainViewModel = mainViewModel;
+            _systemTrayViewModel = new SystemTrayViewModel(windowManager, events, mainViewModel);
             Failed = new ReactiveProperty<bool>(false);
 
             _ = InitializeApplication();

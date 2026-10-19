@@ -62,8 +62,9 @@ format = 'ltsv'
 skip_incompatible = false
 ";
 
-        private string configPath;
-        private string savedBackup;
+        private string configPath = null!;
+        // savedBackup is only read under hadBackup, so a run with no pre-existing file never uses it.
+        private string savedBackup = null!;
         private bool hadBackup;
 
         [SetUp]
@@ -153,10 +154,12 @@ skip_incompatible = false
         {
             Assert.IsTrue(DnscryptProxyConfigurationManager.LoadConfiguration(),
                 "the test's own TOML must parse into the application's model");
+            Assert.That(DnscryptProxyConfigurationManager.DnscryptProxyConfiguration, Is.Not.Null,
+                "the load said true but left no configuration instance behind");
 
             // 250 -> 300 is a field the UI owns (SettingsView binds max_clients), so this is the
             // "user pressed Save" half of the scenario rather than a synthetic call.
-            DnscryptProxyConfigurationManager.DnscryptProxyConfiguration.max_clients = 300;
+            DnscryptProxyConfigurationManager.DnscryptProxyConfiguration!.max_clients = 300;
 
             Assert.IsTrue(DnscryptProxyConfigurationManager.SaveConfiguration(),
                 "SaveConfiguration reported failure, so nothing below is evidence");

@@ -16,10 +16,10 @@ namespace SimpleDnsCrypt.ViewModels
     [Export(typeof(AboutViewModel))]
     public class AboutViewModel : Screen
     {
-        private string _windowTitle;
+        private string _windowTitle = string.Empty;
 
-        private BindableCollection<License> _licenses;
-        private License _selectedLicense;
+        private BindableCollection<License> _licenses = new();
+        private License? _selectedLicense;
 
         [ImportingConstructor]
         public AboutViewModel()
@@ -36,15 +36,15 @@ namespace SimpleDnsCrypt.ViewModels
                 if (SelectedLicense == null) return;
                 if (type.Equals("code"))
                 {
-                    if (SelectedLicense.LicenseCodeLink == null) return;
-                    if (SelectedLicense.LicenseCodeLink.LinkUri == null) return;
-                    Process.Start(SelectedLicense.LicenseCodeLink.LinkUri.ToString());
+                    var codeLink = SelectedLicense.LicenseCodeLink?.LinkUri?.ToString();
+                    if (string.IsNullOrEmpty(codeLink)) return;
+                    Process.Start(codeLink);
                 }
                 else if (type.Equals("regular"))
                 {
-                    if (SelectedLicense.LicenseRegularLink == null) return;
-                    if (SelectedLicense.LicenseRegularLink.LinkUri == null) return;
-                    Process.Start(SelectedLicense.LicenseRegularLink.LinkUri.ToString());
+                    var regularLink = SelectedLicense.LicenseRegularLink?.LinkUri?.ToString();
+                    if (string.IsNullOrEmpty(regularLink)) return;
+                    Process.Start(regularLink);
                 }
             }
             catch
@@ -237,12 +237,12 @@ namespace SimpleDnsCrypt.ViewModels
         /// <summary>
         ///     The selected license in the UI.
         /// </summary>
-        public License SelectedLicense
+        public License? SelectedLicense
         {
             get => _selectedLicense;
             set
             {
-                if (value.Equals(_selectedLicense)) return;
+                if (value?.Equals(_selectedLicense) == true) return;
                 _selectedLicense = value;
                 NotifyOfPropertyChange(() => SelectedLicense);
             }
@@ -266,9 +266,9 @@ namespace SimpleDnsCrypt.ViewModels
         /// </summary>
         /// <param name="licenseFileName">Name of the license file.</param>
         /// <returns>The license as string.</returns>
-        private static async Task<string> LoadLicense(string licenseFileName)
+        private static async Task<string?> LoadLicense(string licenseFileName)
         {
-            Stream stream = null;
+            Stream? stream = null;
             try
             {
                 var assembly = Assembly.GetExecutingAssembly();

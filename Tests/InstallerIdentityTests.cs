@@ -40,7 +40,7 @@ namespace Tests
 
             Assert.IsNotNull(dir, "could not locate the solution root from " + AppContext.BaseDirectory);
 
-            return dir.FullName;
+            return dir!.FullName;
         }
 
         private static string ProductWxs()
@@ -74,7 +74,7 @@ namespace Tests
                 return problems;
             }
 
-            var upgradeCode = (string)product.Attribute("UpgradeCode") ?? "";
+            var upgradeCode = (string?)product.Attribute("UpgradeCode") ?? "";
             if (string.Equals(upgradeCode, PredecessorUpgradeCode, StringComparison.OrdinalIgnoreCase))
             {
                 problems.Add("UpgradeCode is instant.sc's; the package would trade installs with a project we do not control");
@@ -84,8 +84,8 @@ namespace Tests
                 problems.Add($"UpgradeCode '{upgradeCode}' is not a GUID");
             }
 
-            var name = (string)product.Attribute("Name") ?? "";
-            var manufacturer = (string)product.Attribute("Manufacturer") ?? "";
+            var name = (string?)product.Attribute("Name") ?? "";
+            var manufacturer = (string?)product.Attribute("Manufacturer") ?? "";
             if (name != SimpleDnsCrypt.Config.Global.ApplicationName)
             {
                 problems.Add($"Product Name '{name}' differs from Global.ApplicationName '{SimpleDnsCrypt.Config.Global.ApplicationName}'");
@@ -95,18 +95,18 @@ namespace Tests
                 problems.Add($"Manufacturer is '{manufacturer}', expected Esperion");
             }
 
-            var version = (string)product.Attribute("Version") ?? "";
+            var version = (string?)product.Attribute("Version") ?? "";
             if (version != "$(var.Version)")
             {
                 problems.Add($"Version is '{version}'; it must come from the build, not from a literal in the file");
             }
 
             var package = product.Element(Wix + "Package");
-            if ((string)package?.Attribute("InstallScope") != "perMachine")
+            if ((string?)package?.Attribute("InstallScope") != "perMachine")
             {
                 problems.Add("Package InstallScope is not perMachine");
             }
-            if ((string)package?.Attribute("Platform") != "$(var.Platform)")
+            if ((string?)package?.Attribute("Platform") != "$(var.Platform)")
             {
                 problems.Add("Package Platform is not supplied by the build");
             }
@@ -115,15 +115,15 @@ namespace Tests
             // value while explaining why it was dropped, and a substring match reported that as a
             // defect in the package.
             if (document.Descendants(Wix + "MajorUpgrade")
-                    .Any(m => string.Equals((string)m.Attribute("AllowDowngrades"), "yes",
+                    .Any(m => string.Equals((string?)m.Attribute("AllowDowngrades"), "yes",
                                             StringComparison.OrdinalIgnoreCase)))
             {
                 problems.Add("AllowDowngrades=\"yes\" lets an older package replace a newer one");
             }
 
             var installFolders = document.Descendants(Wix + "Directory")
-                .Where(d => (string)d.Attribute("Id") == "INSTALLFOLDER")
-                .Select(d => (string)d.Attribute("Name"))
+                .Where(d => (string?)d.Attribute("Id") == "INSTALLFOLDER")
+                .Select(d => (string?)d.Attribute("Name"))
                 .ToList();
             if (installFolders.Count != 1)
             {
@@ -135,7 +135,7 @@ namespace Tests
             }
 
             var services = document.Descendants(Wix + "ServiceControl")
-                .Select(s => (string)s.Attribute("Name"))
+                .Select(s => (string?)s.Attribute("Name"))
                 .ToList();
             if (services.Count != 1)
             {
@@ -147,7 +147,7 @@ namespace Tests
             }
 
             var customActions = document.Descendants(Wix + "CustomAction")
-                .Where(c => (string)c.Attribute("Id") == "UninstallHelper")
+                .Where(c => (string?)c.Attribute("Id") == "UninstallHelper")
                 .ToList();
             if (customActions.Count != 1)
             {
@@ -156,7 +156,7 @@ namespace Tests
             else
             {
                 var action = customActions[0];
-                if ((string)action.Attribute("Execute") != "deferred" || (string)action.Attribute("Impersonate") != "no")
+                if ((string?)action.Attribute("Execute") != "deferred" || (string?)action.Attribute("Impersonate") != "no")
                 {
                     problems.Add("UninstallHelper must be deferred and non-impersonated: it calls netsh and needs the system context");
                 }

@@ -84,7 +84,7 @@ namespace SimpleDnsCrypt.Controls
         /// <param name="sender">The ItemCollection.</param>
         /// <param name="e">Change event args.</param>
         private void AutoScroll_ItemsCollectionChanged(
-            object sender, NotifyCollectionChangedEventArgs e)
+            object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {

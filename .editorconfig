@@ -1,7 +1,91 @@
-[*.cs]
+root = true
+
+# Line endings. The repository is authored on Windows with core.autocrlf, so a text file sits as CRLF in
+# the working tree and as LF in the index; this states the working-tree half. It is scoped to the text
+# families the repository actually tracks rather than to [*], because the tree also holds .png and .ico
+# and trimming or re-ending those would corrupt them. Python is excluded: build/lint-workflows.py runs
+# under python3 on the Linux runner and keeps its LF convention there.
+[*]
 indent_style = space
+tab_width = 4
+
+[*.{cs,vb,xaml,resx,csproj,props,targets,nuspec,config,manifest,sln,settings,yml,yaml,json,md,txt,ps1,wxs}]
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Encoding is deliberately not declared. The tracked tree is a measured mix: 95 of 127 .cs files carry a
+# UTF-8 BOM and 32 do not, 2 of 36 .resx do, 1 of 15 .md does, and no .yml, .json, .ps1, .py or .wxs
+# does. A charset rule here would either misdescribe that mix or oblige a rewrite of a quarter of the
+# repository to fit it, so the decision is recorded as open in docs/backlog-triage.md rather than made
+# by a line nobody checked.
+
+[*.{csproj,props,targets,nuspec,config,manifest,sln}]
+indent_size = 2
+
+[*.{yml,yaml,json,md}]
+indent_size = 2
+
+[*.xaml]
 indent_size = 4
-csharp_style_var_elsewhere = true
-csharp_style_var_for_built_in_types = true
-csharp_style_var_when_type_is_apparent = true
+
+[*.{cs,vb}]
+indent_size = 4
+tab_width = 4
+
+# --- using directives and ordering -------------------------------------------------------------
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+csharp_using_directive_placement = outside_namespace:warning
+
+# --- var and expression bodies ------------------------------------------------------------------
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+# --- language keywords and types ----------------------------------------------------------------
+dotnet_style_predefined_type_for_locals_parameters_members = true:warning
+dotnet_style_predefined_type_for_member_access = true:warning
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_method = false:warning
+dotnet_style_qualification_for_event = false:warning
 csharp_prefer_braces = false
+csharp_prefer_simple_using_statement = true:suggestion
+
+# --- nullability --------------------------------------------------------------------------------
+# CS8632 is the compiler's "a nullable annotation appeared in a file compiled with the nullable context
+# switched off" warning. The annotation syntax is only a lie in that case, so it is reported, and the
+# Release build promotes the whole CS86xx family to an error - see Directory.Build.props.
+dotnet_diagnostic.CS8632.severity = warning
+dotnet_style_require_validation = false
+
+# --- the three the 1.0.0 plan named, plus their neighbours ---------------------------------------
+# CA1031 (catch a general exception type) and CA1062 (validate external arguments) are reported as
+# warnings rather than errors on purpose: this codebase catches Exception in roughly a hundred places
+# and every one of those is a deliberate choice about what a GUI does when the service, the file or
+# the network misbehaves. Turning them into errors is a design conversation, not a find-and-replace.
+# The measured counts are in docs/backlog-triage.md, "Widening the warnings-as-errors gate".
+dotnet_diagnostic.CA1031.severity = warning
+dotnet_diagnostic.CA1062.severity = warning
+dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.CA2007.severity = suggestion
+dotnet_diagnostic.CA1056.severity = suggestion
+dotnet_diagnostic.CA2201.severity = suggestion
+
+# --- naming -------------------------------------------------------------------------------------
+dotnet_naming_rule.private_fields_should_be_camel_case.symbols = private_fields
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_rule.private_fields_should_be_camel_case.style = camel_case_lower_underscore
+dotnet_naming_style.camel_case_lower_underscore.required_prefix = _
+dotnet_naming_style.camel_case_lower_underscore.capitalization = camel_case
+dotnet_naming_rule.private_fields_should_be_camel_case.severity = suggestion
+
+# --- members --------------------------------------------------------------------------------------
+dotnet_diagnostic.IDE0051.severity = suggestion
+dotnet_diagnostic.IDE0052.severity = suggestion
+dotnet_code_quality_unused_parameters = all:suggestion

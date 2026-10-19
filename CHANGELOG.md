@@ -38,6 +38,34 @@ their respective repositories for authoritative histories.
   tooltip is exactly the kind of string that fails in silence.
 
 ### Changed
+- **`.editorconfig` is a real contract now, and the Release build fails on a new nullable warning.** The
+  file used to hold seven lines. It now carries the line-ending rule the working tree already follows
+  (CRLF, scoped to the text families the repository tracks so the rule cannot be applied to a `.png`),
+  using-directive placement and ordering, the `var` and expression-bodied preferences it already hinted
+  at, qualification and predefined-type rules, and the severity of the analyzers the 1.0.0 plan named:
+  `CA1031`, `CA1062` and `IDE0005` as `warning`. Encoding is deliberately **not** declared: the tree is a
+  measured mix (95 of 127 `.cs` files carry a UTF-8 BOM and 32 do not), so the choice is recorded as open
+  in `docs/backlog-triage.md` instead of being made by a line nobody verified.
+  `Directory.Build.props` turns the analyzers and `EnforceCodeStyleInBuild` on for every configuration so
+  an editor and CI see the same thing, and in Release sets `WarningsAsErrors=nullable` while leaving
+  `TreatWarningsAsErrors` **false** — promoting everything would turn ninety-odd deliberate
+  `catch (Exception)` blocks into build failures on the day they were first measured, not on the day
+  someone decides about them. CI builds `-c Release` in both `ci.yml` and `release.yml`, so the gate is
+  the CI gate. `docs/backlog-triage.md` records the counts and the one-step-per-rule way to widen it.
+- **`SimpleDnsCrypt` and `Uninstall` are compiled with `<Nullable>enable</Nullable>` too, and the whole
+  solution is at zero nullable warnings.** The app project is where the inherited code lives, so this is
+  the part that took editing rather than switching: fields that a `[SetUp]`-equivalent fills became
+  explicitly nullable (`MainViewModel.Instance`, `QueryLogViewModel`'s selected line), `IDisposable`
+  service handles became `ServiceController?` behind a `[NotNullWhen(true)]` try-pattern, and where the
+  loader has already proved a value exists the code says so with `!` and a documented invariant
+  (`DnscryptProxyConfigurationManager.DnscryptProxyConfiguration` is non-null once `LoadConfiguration()`
+  returns true) rather than inventing a guard that can never fire.
+- **The test project keeps `<Nullable>enable</Nullable>`.** It was switched off in the working tree to
+  make 76 errors disappear, which is the wrong kind of quiet: the guards would have gone on asserting
+  things the compiler could no longer check. They are annotated instead — `= null!` on fields NUnit
+  assigns in `[SetUp]`, deliberate null-probes written as `null!` so the intent survives, and an explicit
+  `Assert.That(x, Is.Not.Null)` before a dereference that used to be able to throw
+  `NullReferenceException` instead of naming what the scan did not find.
 - **`SimpleDnsCrypt.Utils` is compiled with `<Nullable>enable</Nullable>` and is warning-free.** The 92
   nullable warnings that appeared when it was switched on are fixed at the source rather than silenced:
   types that genuinely can be absent became `?` (`Stamp.Address`, `UpdateManifest.Parse`,
@@ -69,6 +97,13 @@ their respective repositories for authoritative histories.
   entries), which is what `RestoreCommands_WithoutASnapshot_FallBackToDeleteOnly` pins. The netsh forms
   are the documented ones (`set dnsservers`, `add dnsservers … index=N validate=no`); `validate=no` is
   what makes writing a disconnected adapter possible at all.
+- **The service status tracker can now report `NotInstalled`.** It built a tuple of
+  `(TryGetDnsCryptService(out var service), service.Status)`, so the second element dereferenced the
+  service handle on the failure path as well: the first tick on a machine without the `dnscrypt-proxy`
+  service would have thrown `NullReferenceException` instead of yielding the `NotInstalled` the first
+  switch arm was written to produce. It is now an ordinary `if (!try) return NotInstalled;`. Nothing
+  subscribes to `ServiceStatusTracker` today — the enum and the observable are otherwise dead code, and
+  this is a latent defect, not one a user ever met.
 - **Seventeen strings in the interface can now be translated.** Scanning the markup for literals rather
   than fixing the one heading someone happened to notice found `Text="Proxy Logging"` and its description
   line, the resolvers grid's seven column headers, the tray menu's "Show Window", the "Install" and

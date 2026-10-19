@@ -6,11 +6,11 @@ namespace SimpleDnsCrypt.ViewModels
     [Export(typeof(ListenAddressesViewModel))]
     public class ProxiesViewModel : Screen
     {
-        private readonly IWindowManager _windowManager;
-        private readonly IEventAggregator _events;
-        private string _windowTitle;
-        private string _httpProxyInput;
-        private string _socksProxyInput;
+        private readonly IWindowManager? _windowManager;
+        private readonly IEventAggregator? _events;
+        private string _windowTitle = string.Empty;
+        private string _httpProxyInput = string.Empty;
+        private string _socksProxyInput = string.Empty;
 
         public ProxiesViewModel()
         {

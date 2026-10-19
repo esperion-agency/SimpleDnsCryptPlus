@@ -23,7 +23,7 @@ namespace SimpleDnsCrypt.ViewModels
         {
             try
             {
-                List<string> issues;
+                List<string>? issues;
                 try
                 {
                     issues = StampTools.Decode(s)?.ValidationIssues.ToList();
@@ -43,7 +43,7 @@ namespace SimpleDnsCrypt.ViewModels
                     return string.Join("\n", issues);
                 }
 
-                return null;
+                return string.Empty;
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace SimpleDnsCrypt.ViewModels
             Name = new ReactiveProperty<string>("").SetValidateNotifyError(s =>
             {
                 if (string.IsNullOrWhiteSpace(s)) return "Name must not be empty";
-                return ExistingNames.Contains(s) ? $"Name {s} is already present in the server list" : null;
+                return ExistingNames.Contains(s) ? $"Name {s} is already present in the server list" : string.Empty;
             });
             OkCommand = ReactiveCommand.CreateFromTask(() => TryCloseAsync(true), Name.ObserveHasErrors.CombineLatest(Stamp.ObserveHasErrors, (a, b) => !a && !b));
             CancelCommand = ReactiveCommand.CreateFromTask(() => TryCloseAsync(false));

@@ -2,4 +2,28 @@
   <PropertyGroup>
     <PathMap>$(MSBuildProjectDirectory)=$(MSBuildProjectName)</PathMap>
   </PropertyGroup>
+
+  <!--
+    Code quality gate. The analyzers run on every build, Release and Debug alike, so a warning shows in
+    the developer's editor and in CI from the same configuration rather than only in one of them.
+
+    TreatWarningsAsErrors stays off on purpose: setting it true would promote every analyzer warning
+    into a build failure, which is not a gate anyone has earned yet. WarningsAsErrors=nullable is the
+    Roslyn keyword for the CS86xx family alone - that class is at zero across SimpleDnsCrypt,
+    SimpleDnsCrypt.Utils and Uninstall, so a new one is unambiguously a regression. The CA/IDE rules
+    named in .editorconfig are reported but do not break the build; their count in the inherited code is
+    a measured finding recorded in docs/backlog-triage.md ("Widening the warnings-as-errors gate"), so
+    promoting a rule later is a decision with a number attached to it.
+  -->
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+  </PropertyGroup>
 </Project>

@@ -12,7 +12,7 @@ namespace SimpleDnsCrypt.ViewModels
         private readonly IEventAggregator _events;
 
         private BindableCollection<string> _addressBlacklist;
-        private string _selectedAddressBlacklistEntry;
+        private string? _selectedAddressBlacklistEntry;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AddressBlacklistViewModel"/> class
@@ -28,12 +28,12 @@ namespace SimpleDnsCrypt.ViewModels
             _addressBlacklist = new BindableCollection<string>();
         }
 
-        public string SelectedAddressBlacklistEntry
+        public string? SelectedAddressBlacklistEntry
         {
             get => _selectedAddressBlacklistEntry;
             set
             {
-                if (value.Equals(_selectedAddressBlacklistEntry)) return;
+                if (value == _selectedAddressBlacklistEntry) return;
                 _selectedAddressBlacklistEntry = value;
                 NotifyOfPropertyChange(() => SelectedAddressBlacklistEntry);
             }

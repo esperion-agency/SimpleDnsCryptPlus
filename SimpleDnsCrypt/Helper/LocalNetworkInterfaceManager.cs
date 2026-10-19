@@ -88,7 +88,7 @@ namespace SimpleDnsCrypt.Helper
         /// <returns>A (filtered) list of the local network interfaces.</returns>
         /// <exception cref="NetworkInformationException">A Windows system function call failed. </exception>
         /// <exception cref="ArgumentNullException"></exception>
-        public static List<LocalNetworkInterface> GetLocalNetworkInterfaces(List<string> listenAddresses = null, bool showHiddenCards = false,
+        public static List<LocalNetworkInterface> GetLocalNetworkInterfaces(List<string>? listenAddresses = null, bool showHiddenCards = false,
             bool showOnlyOperationalUp = true)
         {
             var interfaces = new List<LocalNetworkInterface>();
@@ -145,7 +145,7 @@ namespace SimpleDnsCrypt.Helper
         /// <param name="localNetworkInterface">The interface to check.</param>
         /// <param name="strictCheck"></param>
         /// <returns><c>true</c> if a address was found, otherwise <c>false</c></returns>
-        public static bool IsUsingDnsCrypt(List<string> listenAddresses, LocalNetworkInterface localNetworkInterface, bool strictCheck = false)
+        public static bool IsUsingDnsCrypt(List<string>? listenAddresses, LocalNetworkInterface localNetworkInterface, bool strictCheck = false)
         {
             if (listenAddresses == null) return false;
             var addressOnly = (from listenAddress in listenAddresses let lastIndex = listenAddress.LastIndexOf(":", StringComparison.Ordinal) select listenAddress.Substring(0, lastIndex).Replace("[", "").Replace("]", "")).ToHashSet();
@@ -232,7 +232,7 @@ namespace SimpleDnsCrypt.Helper
         /// <param name="localNetworkInterface"></param>
         /// <param name="dnsServers"></param>
         /// <returns></returns>
-        public static bool SetNameservers(this LocalNetworkInterface localNetworkInterface, List<DnsServer> dnsServers)
+        public static bool SetNameservers(this LocalNetworkInterface localNetworkInterface, List<DnsServer>? dnsServers)
         {
             try
             {
