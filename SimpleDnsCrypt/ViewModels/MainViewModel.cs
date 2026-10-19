@@ -1054,12 +1054,13 @@ namespace SimpleDnsCrypt.ViewModels
 
         #region Advanced Settings
 
-        public void SaveAdvancedSettings()
+        public async void SaveAdvancedSettings()
         {
             if (!HasErrors)
             {
-                //TODO: do something about this
-                _ = SaveDnsCryptConfiguration();
+                // Awaited, like every other caller of this method: discarding the task meant a failed
+                // write left no trace and the button gave no signal that nothing was saved.
+                await SaveDnsCryptConfiguration();
             }
         }
 

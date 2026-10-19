@@ -184,7 +184,7 @@
                                                 VerticalAlignment="Center" />
                                             <Button Grid.Row="0" Grid.Column="2"
                                                     Style="{DynamicResource CustomAccentedSquareButtonStyle}"
-                                                    Content="Install"
+                                                    Content="{lex:Loc Key=default_settings_install_service}"
                                                     HorizontalAlignment="Left"
                                                     Visibility="{Binding IsServiceInstalled, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}"
                                                     Command="{Binding InstallServiceCommand}"/>
@@ -340,7 +340,7 @@
                                             <Button DockPanel.Dock="Right"
                                                     Command="{Binding AddCustomResolverFromStampCommand}"
                                                     Cursor="Hand"
-                                                    Content="Add custom resolver"
+                                                    Content="{lex:Loc Key=add_custom_resolver_header}"
                                                     Width="Auto" HorizontalAlignment="Right"
                                                     Style="{DynamicResource CustomAccentedSquareButtonStyle}"
                                                     Margin="0,0,5,0" />
@@ -391,7 +391,7 @@
                                                   VirtualizingStackPanel.IsVirtualizing="True"
                                                   d:DataContext="{d:DesignInstance Type=models:AvailableResolver}">
                                             <DataGrid.Columns>
-                                                <DataGridCheckBoxColumn Header="Enabled"
+                                                <DataGridCheckBoxColumn Header="{lex:Loc Key=enabled}"
                                                                         Binding="{Binding IsInServerList, UpdateSourceTrigger=PropertyChanged}"
                                                                         ElementStyle="{x:Static DataGridCheckBoxColumn.DefaultEditingElementStyle}"
                                                                         CanUserResize="False"/>
@@ -437,23 +437,23 @@
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
-                                                <DataGridTextColumn IsReadOnly="True" Header="Name"
+                                                <DataGridTextColumn IsReadOnly="True" Header="{lex:Loc Key=resolvers_column_name}"
                                                                     Binding="{Binding Name}" />
-                                                <DataGridTextColumn IsReadOnly="True" Header="Protocol"
+                                                <DataGridTextColumn IsReadOnly="True" Header="{lex:Loc Key=resolvers_column_protocol}"
                                                                     Binding="{Binding Protocol}" />
-                                                <DataGridCheckBoxColumn Header="DnsSec" 
+                                                <DataGridCheckBoxColumn Header="{lex:Loc Key=resolvers_column_dnssec}" 
                                                                         IsReadOnly="True" 
                                                                         Binding="{Binding DnsSec}"
                                                                         CanUserResize="False"/>
-                                                <DataGridCheckBoxColumn Header="NoLog" 
+                                                <DataGridCheckBoxColumn Header="{lex:Loc Key=resolvers_column_nolog}" 
                                                                         IsReadOnly="True" 
                                                                         Binding="{Binding NoLog}"
                                                                         CanUserResize="False"/>
-                                                <DataGridCheckBoxColumn Header="NoFilter" 
+                                                <DataGridCheckBoxColumn Header="{lex:Loc Key=resolvers_column_nofilter}" 
                                                                         IsReadOnly="True" 
                                                                         Binding="{Binding NoFilter}"
                                                                         CanUserResize="False"/>
-                                                <DataGridTextColumn IsReadOnly="True" Header="Description"
+                                                <DataGridTextColumn IsReadOnly="True" Header="{lex:Loc Key=resolvers_column_description}"
                                                                     Binding="{Binding Description}" Width="400">
                                                     <DataGridTextColumn.ElementStyle>
                                                         <Style>
@@ -478,7 +478,7 @@
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </DataGrid>
-                                        <TextBlock Foreground="#FF575757" Text="No resolvers have been loaded yet"
+                                        <TextBlock Foreground="#FF575757" Text="{lex:Loc Key=resolvers_none_loaded}"
                                                    Visibility="{Binding Resolvers.Count, Converter={StaticResource IntegerToVisibilityConverter}}"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Grid>
@@ -729,7 +729,7 @@
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
                                             <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Text"/>
-                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="Proxy Logging">
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=advanced_settings_proxy_logging}">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -742,7 +742,7 @@
                                             </Grid.RowDefinitions>
                                             <TextBlock Foreground="#FF575757" Grid.Row="0" Grid.Column="0"
                                                        TextWrapping="Wrap"
-                                                       Text="Log to dnscrypt-proxy.log (log_level: 0)"
+                                                       Text="{lex:Loc Key=advanced_settings_proxy_logging_content}"
                                                        VerticalAlignment="Bottom"
                                                        HorizontalAlignment="Left" Margin="0,0,0,5">
                                             </TextBlock>
@@ -1535,7 +1535,7 @@
                                                         Foreground="{DynamicResource MahApps.Brushes.Accent}" />
                                                     <Button.ToolTip>
                                                         <Label
-                                                            Content="whitelist"
+                                                            Content="{lex:Loc Key=domainblocklog_unblock_tooltip}"
                                                             FontWeight="DemiBold" />
                                                     </Button.ToolTip>
                                                 </Button>

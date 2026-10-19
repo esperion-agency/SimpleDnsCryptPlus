@@ -39,19 +39,19 @@
                                                 Foreground="#FF8ab329"
                                                 HorizontalAlignment="Left"
                                                 VerticalAlignment="Center" />
-                    <TextBlock Text="Add custom resolver"
+                    <TextBlock Text="{lex:Loc Key=add_custom_resolver_header}"
                                TextWrapping="Wrap" VerticalAlignment="Center"
                                Foreground="#FF8ab329" FontSize="20"
                                Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
                     </TextBlock>
                 </StackPanel>
-                <TextBlock Text="Name"
+                <TextBlock Text="{lex:Loc Key=add_custom_resolver_name}"
                            TextWrapping="Wrap" VerticalAlignment="Center"
                            Foreground="#FF8ab329" FontSize="14"
                            Opacity="0.7" Margin="5,8,0,3" FontWeight="Bold">
                 </TextBlock>
                 <TextBox mah:TextBoxHelper.Watermark="Name" Text="{Binding Name.Value, UpdateSourceTrigger=PropertyChanged}" mah:TextBoxHelper.ClearTextButton="True"></TextBox>
-                <TextBlock Text="DNS stamp"
+                <TextBlock Text="{lex:Loc Key=add_custom_resolver_stamp}"
                            TextWrapping="Wrap" VerticalAlignment="Center"
                            Foreground="#FF8ab329" FontSize="14"
                            Opacity="0.7" Margin="5,8,0,3" FontWeight="Bold">

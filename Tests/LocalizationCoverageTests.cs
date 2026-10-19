@@ -163,6 +163,113 @@ namespace Tests
                 string.Join(", ", broken));
         }
 
+        /// <summary>
+        /// A literal in the markup is a string no user can ever read in their own language: the 34 POEditor
+        /// exports are frozen (that project belongs to upstream's author), so a hard-coded label stays
+        /// English for as long as this fork exists.
+        /// <para>
+        /// Parsed from the XAML tree, not grepped, for two reasons measured while writing this:
+        /// <c>SizeToContent="WidthAndHeight"</c> in BaseWindow.xaml matches a "Content=" regex and is not
+        /// text, and a TextBlock that carries its text as element content matches no attribute regex at
+        /// all. Only values containing a letter are considered - the two "|" separators between grid
+        /// columns are glyphs, not prose, and asking for a resource key for one would be nonsense.
+        /// </para>
+        /// </summary>
+        [Test]
+        public void NoViewOrWindowCarriesAnUntranslatedProseLiteral()
+        {
+            var root = FindRepoRoot();
+            var files = Directory.GetFiles(Path.Combine(root, "SimpleDnsCrypt", "Views"), "*.xaml")
+                .Concat(Directory.GetFiles(Path.Combine(root, "SimpleDnsCrypt", "Windows"), "*.xaml"));
+
+            // Text, Content and Header are the three dependency properties this interface shows text in.
+            var offenders = new List<string>();
+
+            foreach (var file in files)
+            {
+                var document = System.Xml.Linq.XDocument.Load(file);
+                var name = Path.GetFileName(file);
+
+                foreach (var element in document.Descendants())
+                {
+                    foreach (var property in new[] { "Text", "Content", "Header" })
+                    {
+                        var value = element.Attribute(property)?.Value?.Trim();
+
+                        if (value != null && value.Length > 0 && !value.StartsWith("{", StringComparison.Ordinal)
+                            && value.Any(char.IsLetter))
+                        {
+                            offenders.Add($"{name} <{element.Name.LocalName} {property}=\"{value}\">");
+                        }
+                    }
+
+                    // A TextBlock/Label/Button whose text is the element value rather than an attribute.
+                    var isTextBearer = element.Name.LocalName == "TextBlock"
+                                      || element.Name.LocalName == "Label"
+                                      || element.Name.LocalName == "Button";
+
+                    if (isTextBearer && !element.HasElements && element.Value.Any(char.IsLetter)
+                        && !element.Value.TrimStart().StartsWith("{", StringComparison.Ordinal))
+                    {
+                        offenders.Add($"{name} <{element.Name.LocalName}> value \"{element.Value.Trim()}\"");
+                    }
+                }
+            }
+
+            Assert.IsEmpty(offenders,
+                "strings that can never be translated, add them to Translation.resx and bind with " +
+                $"{{{{lex:Loc Key=...}}}}:\n{string.Join("\n", offenders)}");
+        }
+
+        /// <summary>
+        /// Every <c>{lex:Loc Key=...}</c> in the markup must name a string that actually resolves.
+        /// <c>LocalizeDictionary.OutputMissingKeys="False"</c> in MainView.xaml means a key that does not
+        /// exist renders as an empty label rather than as something obviously wrong, so a typo in a key
+        /// name silently deletes UI text - and a test that only checks the resx files cannot see it,
+        /// because the resx is valid on its own. This reads the references out of the XAML and asks the
+        /// same lookup the running application uses.
+        /// </summary>
+        [Test]
+        public void EveryKeyReferencedByTheMarkupResolvesForEveryOfferedLanguage()
+        {
+            var root = FindRepoRoot();
+            var files = Directory.GetFiles(Path.Combine(root, "SimpleDnsCrypt", "Views"), "*.xaml")
+                .Concat(Directory.GetFiles(Path.Combine(root, "SimpleDnsCrypt", "Windows"), "*.xaml"))
+                .Concat(Directory.GetFiles(Path.Combine(root, "SimpleDnsCrypt", "Styles"), "*.xaml"));
+
+            var referenced = new SortedSet<string>(StringComparer.Ordinal);
+            foreach (var file in files)
+            {
+                foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(
+                             File.ReadAllText(file), @"lex:Loc\s+Key=([A-Za-z0-9_.]+)"))
+                {
+                    referenced.Add(match.Groups[1].Value);
+                }
+            }
+
+            // A reference set that came out empty would pass every assertion below, so the denominator
+            // is part of the claim: this is measuring the interface, not a directory it cannot read.
+            Assert.Greater(referenced.Count, 100,
+                $"only {referenced.Count} markup keys found - the scan is broken, not the app");
+
+            var broken = new List<string>();
+            foreach (var code in SupportedShortCodes)
+            {
+                var culture = new CultureInfo(code, false);
+                foreach (var key in referenced)
+                {
+                    if (string.IsNullOrEmpty(LocalizationEx.GetUiString(key, culture)))
+                    {
+                        broken.Add($"{code}/{key}");
+                    }
+                }
+            }
+
+            Assert.IsEmpty(broken,
+                $"{referenced.Count} keys are referenced by the markup; these resolve to nothing and " +
+                $"render as blank labels: " + string.Join(", ", broken));
+        }
+
         private static string KeyFromFileName(string path)
         {
             var name = Path.GetFileNameWithoutExtension(path);

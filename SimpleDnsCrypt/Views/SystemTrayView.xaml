@@ -19,7 +19,7 @@
     lex:ResxLocalizationProvider.DefaultDictionary="Translation">
     <UserControl.Resources>
         <ContextMenu x:Shared="false" x:Key="MainSysTrayMenu">
-            <MenuItem Header="Show Window" Command="{Binding ShowWindowCommand}" Visibility="{Binding CanShowWindow, Converter={x:Static converters:BoolToVisibilityCollapsedConverter.Instance}}" />
+            <MenuItem Header="{lex:Loc Key=tray_menu_show_window}" Command="{Binding ShowWindowCommand}" Visibility="{Binding CanShowWindow, Converter={x:Static converters:BoolToVisibilityCollapsedConverter.Instance}}" />
             <MenuItem Header="{lex:Loc Key=trayicon_exit}" Command="{Binding ExitApplicationCommand}" />
         </ContextMenu>
         <tb:TaskbarIcon x:Key="SystemTrayIcon"

@@ -83,12 +83,27 @@ which adapters to restore. Recorded now because a *marker* list was added beside
 anyone merging them has to decide which of the three copies survives. Also R2-gated, so it stays
 separate from the visual work that surfaced it.
 
-**One main-view heading has no translation key.** `SimpleDnsCrypt/Views/MainView.xaml:732` sets
-`Text="Proxy Logging"` while seventeen of the eighteen other headings in the file go through
-`{lex:Loc}` (the nineteenth binds the resolver count, so it has nothing to translate). Found
-while moving headings onto a shared style, and deliberately not folded into that change: it needs a
-resx key and a decision about which log the section actually is. Cosmetic in English, missing in the
-other 33 languages.
+**One main-view heading had no translation key.** Fixed: `Text="Proxy Logging"` in
+`SimpleDnsCrypt/Views/MainView.xaml` became `{lex:Loc Key=advanced_settings_proxy_logging}`. Doing it with a
+scanned instrument rather than by hand found **17** untranslated literals across the markup, not one — the
+Proxy Logging heading and its description line, the resolvers grid's seven column headers, the tray menu's
+"Show Window", the "Install" and "Add custom resolver" buttons, the empty-resolvers message, the whitelist
+tooltip and the three labels in the custom-resolver dialog. All 17 now resolve through the neutral file (the
+"Enabled" header reuses upstream's `enabled` key, so it arrives in 34 languages for free), and
+`Tests/LocalizationCoverageTests.cs` holds the line twice over: no literal prose in `Text`/`Content`/`Header`,
+and every `{lex:Loc Key=…}` the markup names resolves for every offered language — `OutputMissingKeys="False"`
+means a mistyped key shows as a blank label, which the resx files alone cannot catch.
+
+**Translations are still frozen; new strings ship English-only.** The 16 keys added for those literals exist
+only in the neutral `Translation.resx`, which reaches every culture through `ResourceManager`'s invariant
+fallback. A German user therefore reads "Proxy Logging" in English — which is what they read before, except
+that it is now a key someone can supply a translation for without touching markup.
+
+**The dialog that asks for a rule label said "Rule:" in code.** `QueryLogViewModel` and
+`DomainBlockLogViewModel` each passed a literal to `ShowInputAsync`; both use `dialog_message_rule` now.
+Two fire-and-forget calls that the build was warning about (`CS4014`) are awaited: `SaveAdvancedSettings`
+and `ClearDomainBlackList`. The remaining `CS0067` is a genuinely unused `IDataErrorInfo.ErrorsChanged`
+event on `MainViewModel`.
 
 **Saving emits defaults for keys the file never held.** `SaveConfiguration()` writes the whole typed model,
 so every property the loaded file did not supply comes out as its C# default. Observed directly: saving a

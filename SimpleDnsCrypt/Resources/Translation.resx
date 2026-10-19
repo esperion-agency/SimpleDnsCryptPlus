@@ -137,4 +137,52 @@
   <data name="network_card_virtual_hint" xml:space="preserve">
     <value>Virtual or tunnel adapter</value>
   </data>
+  <data name="add_custom_resolver_header" xml:space="preserve">
+    <value>Add custom resolver</value>
+  </data>
+  <data name="add_custom_resolver_name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="add_custom_resolver_stamp" xml:space="preserve">
+    <value>DNS stamp</value>
+  </data>
+  <data name="default_settings_install_service" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="resolvers_none_loaded" xml:space="preserve">
+    <value>No resolvers have been loaded yet</value>
+  </data>
+  <data name="resolvers_column_name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="resolvers_column_protocol" xml:space="preserve">
+    <value>Protocol</value>
+  </data>
+  <data name="resolvers_column_dnssec" xml:space="preserve">
+    <value>DnsSec</value>
+  </data>
+  <data name="resolvers_column_nolog" xml:space="preserve">
+    <value>NoLog</value>
+  </data>
+  <data name="resolvers_column_nofilter" xml:space="preserve">
+    <value>NoFilter</value>
+  </data>
+  <data name="resolvers_column_description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="advanced_settings_proxy_logging" xml:space="preserve">
+    <value>Proxy Logging</value>
+  </data>
+  <data name="advanced_settings_proxy_logging_content" xml:space="preserve">
+    <value>Log to dnscrypt-proxy.log (log_level: 0)</value>
+  </data>
+  <data name="domainblocklog_unblock_tooltip" xml:space="preserve">
+    <value>whitelist</value>
+  </data>
+  <data name="tray_menu_show_window" xml:space="preserve">
+    <value>Show Window</value>
+  </data>
+  <data name="dialog_message_rule" xml:space="preserve">
+    <value>Rule:</value>
+  </data>
 </root>

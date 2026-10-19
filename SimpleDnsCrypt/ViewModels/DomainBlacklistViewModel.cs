@@ -443,11 +443,11 @@ namespace SimpleDnsCrypt.ViewModels
             }
         }
 
-        public void ClearDomainBlackList()
+        public async void ClearDomainBlackList()
         {
             Execute.OnUIThread(() => { DomainBlacklistRules.Clear(); });
             SaveBlacklistRulesToFile();
-            BuildBlacklist();
+            await BuildBlacklist();
         }
 
         public async void AddBlacklistRule()

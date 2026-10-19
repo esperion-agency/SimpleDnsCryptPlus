@@ -28,6 +28,25 @@ their respective repositories for authoritative histories.
   tooltip is exactly the kind of string that fails in silence.
 
 ### Fixed
+- **Seventeen strings in the interface can now be translated.** Scanning the markup for literals rather
+  than fixing the one heading someone happened to notice found `Text="Proxy Logging"` and its description
+  line, the resolvers grid's seven column headers, the tray menu's "Show Window", the "Install" and
+  "Add custom resolver" buttons, the empty-resolvers message, the whitelist tooltip and the three labels of
+  the custom-resolver dialog. Each is a `{lex:Loc Key=…}` reference now; the "Enabled" header reuses
+  upstream's existing `enabled` key, so it arrives translated in 34 languages while the other sixteen ship
+  English-only through the neutral file, as every new string here does. Two guards keep the class closed:
+  `Tests/LocalizationCoverageTests.NoViewOrWindowCarriesAnUntranslatedProseLiteral` (parsed from the XAML
+  tree, because `SizeToContent="WidthAndHeight"` matches a `Content=` regex and a `TextBlock` can carry its
+  text as element content) and `EveryKeyReferencedByTheMarkupResolvesForEveryOfferedLanguage`, which asks
+  the running application's own lookup — `OutputMissingKeys="False"` renders a mistyped key as a blank
+  label, invisible to any check that reads only the `.resx` files.
+- **The rule dialogs no longer ask "Rule:" in C#.** `QueryLogViewModel.BlockQueryLogEntry` and
+  `DomainBlockLogViewModel.UnblockBlockLogEntry` each carried a `//TODO: translate` over a literal passed
+  straight to `ShowInputAsync`; both read `dialog_message_rule` now.
+- `SaveAdvancedSettings` discarded `SaveDnsCryptConfiguration()` with `_ =` next to a
+  `//TODO: do something about this`, so a failed write left no trace and the button gave no signal. It is
+  awaited, as the five other call sites of that method already were. `ClearDomainBlackList` awaited
+  `BuildBlacklist()` for the same reason; both were `CS4014` warnings.
 - **A save no longer deletes settings the GUI does not own.** `SaveConfiguration()` wrote the typed model
   and nothing else, so any key absent from `DnscryptProxyConfiguration` was erased from
   `dnscrypt-proxy.toml` the first time the application saved — including the settings dnscrypt-proxy 2.1.18
