@@ -22,6 +22,16 @@ namespace SimpleDnsCrypt.Converters
             try
             {
                 var localNetworkInterface = (LocalNetworkInterface)value;
+
+                // A Hyper-V switch reports NetworkInterfaceType.Ethernet, so the switch below would
+                // hand it the same cable icon the Realtek adapter gets. The marker decides the icon
+                // before the type does, because the icon is the only place on the tile that is free:
+                // Tile.Title owns the bottom-left and the address line the top-left.
+                if (localNetworkInterface.IsVirtualAdapter)
+                {
+                    return "CubeOutline";
+                }
+
                 bool isCable;
                 switch (localNetworkInterface.Type)
                 {

@@ -14,8 +14,7 @@ namespace SimpleDnsCrypt.Converters
             var text = (string)value;
             return text.Length switch
             {
-                <= 10 => 14,
-                > 10 and < 15 => 14,
+                <= 14 => 14,
                 _ => 10,
             };
         }

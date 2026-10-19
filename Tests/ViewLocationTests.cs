@@ -59,6 +59,13 @@ namespace Tests
             Assert.AreEqual(expectedViewType, located);
         }
 
+        /// <summary>
+        /// Locating a type says nothing about its markup. MainView now pulls its section styles out
+        /// of a merged dictionary, and a key that does not resolve throws XamlParseException at the
+        /// moment the view is built — which is exactly when a user would see an empty tab with no
+        /// exception anywhere in the log. Assert.IsAssignableFrom was the whole test before, so
+        /// nothing here could ever have caught that.
+        /// </summary>
         [Test]
         public void EveryLocatedViewIsUsableAsWpfContent()
         {
@@ -76,6 +83,22 @@ namespace Tests
                 Assert.IsNotNull(located, $"no View located for {viewModelType.Name}");
                 Assert.IsTrue(typeof(System.Windows.UIElement).IsAssignableFrom(located),
                     $"{located.Name} located for {viewModelType.Name} is not a UIElement");
+
+                object built;
+
+                try
+                {
+                    built = Activator.CreateInstance(located);
+                }
+                catch (Exception exception)
+                {
+                    var reason = exception.InnerException?.Message ?? exception.Message;
+                    Assert.Fail($"{located.Name} could not be constructed as content: " +
+                                $"{exception.GetType().Name}: {reason}");
+                    continue;
+                }
+
+                Assert.IsNotNull(built, $"{located.Name} constructed to nothing");
             }
         }
     }

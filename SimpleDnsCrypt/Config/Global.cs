@@ -124,6 +124,41 @@ namespace SimpleDnsCrypt.Config
             "TAP"
         };
 
+        /// <summary>
+        ///     Tokens that mark an adapter as virtual, tunnel or loopback without hiding it.
+        ///     Deliberately wider than <see cref="NetworkInterfaceBlacklist"/>, which is a list of
+        ///     names a 2010 Windows used: a Hyper-V switch, a Bluetooth PAN and a Wintun-based VPN
+        ///     are all operational today and none of them appear there, so they show up in the
+        ///     interface list looking like a cable. Marking one wrongly costs an icon; hiding one
+        ///     wrongly costs the user their Wi-Fi (DNSCrypt/SimpleDnsCrypt#565), which is why this
+        ///     list decorates and never filters.
+        /// </summary>
+        public static readonly string[] VirtualAdapterMarkers =
+        {
+            "Hyper-V",
+            "vEthernet",
+            "WSL",
+            "Virtual",
+            "Virtueller",
+            "gehosteter",
+            "hosted",
+            "Loopback",
+            "ISATAP",
+            "Teredo",
+            "WAN Miniport",
+            "Tunnel",
+            "VPN",
+            "Hamachi",
+            "VMware",
+            "VirtualBox",
+            "TAP",
+            "Wintun",
+            "Tailscale",
+            "WireGuard",
+            "Bluetooth",
+            "Wi-Fi Direct"
+        };
+
         public static string InstallPath { get; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static string DnsCryptFolderPath { get; } = Path.Combine(InstallPath, DnsCryptProxyFolderName);

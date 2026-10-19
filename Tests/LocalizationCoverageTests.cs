@@ -95,8 +95,7 @@ namespace Tests
         /// in neutral is the designed state, not drift.
         /// </summary>
         [Test]
-        public void AllLanguageFilesCarryTheSameKeys()
-        {
+        public void AllLanguageFilesCarryTheSameKeys()        {
             var dir = Path.Combine(FindRepoRoot(), "SimpleDnsCrypt", "Resources");
             var byLanguage = Directory.GetFiles(dir, "Translation.*.resx")
                 .ToDictionary(KeyFromFileName, ReadKeys);
@@ -123,6 +122,45 @@ namespace Tests
             Assert.IsEmpty(drift,
                 $"language files no longer agree with {reference.Key} ({baseline.Count} keys):\n" +
                 string.Join("\n", drift));
+        }
+
+        /// <summary>
+        /// Keys that exist only in the neutral file are how this fork adds a string without touching
+        /// the 34 POEditor exports, and the network-card badge tooltip is one of them. Nothing else
+        /// here proves the invariant fallback still delivers them: the test above skips the neutral
+        /// file on purpose, so if the lookup ever stopped falling back, a German user would simply
+        /// lose that line and CI would stay green.
+        /// </summary>
+        [Test]
+        public void EveryOfferedLanguageResolvesTheKeysAddedToTheNeutralFileOnly()
+        {
+            var dir = Path.Combine(FindRepoRoot(), "SimpleDnsCrypt", "Resources");
+            var neutral = ReadKeys(Path.Combine(dir, "Translation.resx"));
+            var satellite = ReadKeys(Path.Combine(dir, "Translation.de.resx"));
+            var neutralOnly = neutral.Except(satellite).ToList();
+
+            CollectionAssert.Contains(neutralOnly, "network_card_virtual_hint",
+                "the badge tooltip key now exists in the satellite files too, which means this test " +
+                "has stopped measuring the fallback path it was written to protect");
+
+            var broken = new List<string>();
+
+            foreach (var code in SupportedShortCodes)
+            {
+                var culture = new CultureInfo(code, false);
+
+                foreach (var key in neutralOnly)
+                {
+                    if (LocalizationEx.GetUiString(key, culture) == null)
+                    {
+                        broken.Add($"{code}/{key}");
+                    }
+                }
+            }
+
+            Assert.IsEmpty(broken,
+                $"neutral-only keys (there are {neutralOnly.Count}) that resolve for no culture: " +
+                string.Join(", ", broken));
         }
 
         private static string KeyFromFileName(string path)

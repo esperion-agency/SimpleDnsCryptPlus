@@ -67,6 +67,29 @@ the resolver list is downloaded from `public-resolvers.md`, curated upstream. No
 repository can remove an entry without forking the list. The fix belongs in the DNSCrypt resolvers
 repository.
 
+**Uninstall leaves DNS on the cards it cannot see at the time you press the button.**
+`SimpleDnsCrypt/ViewModels/MainViewModel.cs:1321-1332` says in a comment that it clears "also the
+hidden and down cards", then calls `GetLocalNetworkInterfaces` with its defaults, which filter to
+operational and non-blacklisted. Any interface that is down or blacklisted when uninstall runs keeps
+its static DNS servers — the one failure mode `docs/testing/dns-safety.md` is written around. The
+same block then re-finds the card to update by `Description.Equals(...)`, and `Description` carries
+the adapter's address list, so a DHCP change between the two enumerations makes the row a silent
+no-op. Needs an **R2** sandbox to prove any fix; this is not a code review change.
+
+**`Uninstall/Program.cs` keeps its own third copy of the interface filter.** Lines 59-95 re-implement
+the blacklist and the operational check instead of calling `LocalNetworkInterfaceManager`, and the
+MSI runs it as a deferred custom action — so the portable and installed channels can disagree about
+which adapters to restore. Recorded now because a *marker* list was added beside the blacklist:
+anyone merging them has to decide which of the three copies survives. Also R2-gated, so it stays
+separate from the visual work that surfaced it.
+
+**One main-view heading has no translation key.** `SimpleDnsCrypt/Views/MainView.xaml:732` sets
+`Text="Proxy Logging"` while seventeen of the eighteen other headings in the file go through
+`{lex:Loc}` (the nineteenth binds the resolver count, so it has nothing to translate). Found
+while moving headings onto a shared style, and deliberately not folded into that change: it needs a
+resx key and a decision about which log the section actually is. Cosmetic in English, missing in the
+other 33 languages.
+
 ## Needs a reproduction before anyone touches it
 
 | Issue | Complaint | What is missing |
@@ -75,7 +98,7 @@ repository.
 | `DNSCrypt#517` | Rejected queries flood the log; add a filter | A real feature request. The 1000-line cap stops the memory growth but does not filter content. |
 | `DNSCrypt#542` | Unresponsive query log table | Retest against a build with bounded collections and report the result. The unbounded list is a plausible cause; unproven. |
 | `DNSCrypt#548` | Freeze on the Resolvers tab | Retest: the resolver list is ~195 entries and the tab builds a filtered view over it. Report OS and adapter count. |
-| `DNSCrypt#565` | Wi-Fi card missing from the list | Almost always the blacklist. With `SIMPLEDNSCRYPT_ALLOW_VIRTUAL_NICS=1` (or ticking "show hidden") a reporter can now tell us whether the filter is the cause. |
+| `DNSCrypt#565` | Wi-Fi card missing from the list | Almost always the blacklist. With `SIMPLEDNSCRYPT_ALLOW_VIRTUAL_NICS=1` (or ticking "show hidden") a reporter can now tell us whether the filter is the cause. Virtual adapters are now *marked* instead of hidden, which keeps the two complaints apart: "I cannot tell what this card is" has a different answer from "my card is missing", and `NetworkInterfaceBlacklist` is pinned at its 14 entries by `Tests/NetworkInterfaceFilterTests.cs` so fixing the first cannot deepen the second. |
 
 ## Will not be fixed here, with reasons
 

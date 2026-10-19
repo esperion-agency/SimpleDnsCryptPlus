@@ -15,6 +15,7 @@ namespace SimpleDnsCrypt.Models
         private bool _ipv4Support;
         private bool _useDnsCrypt;
         private bool _isChangeable;
+        private bool _isVirtualAdapter;
 
         public LocalNetworkInterface()
         {
@@ -102,6 +103,20 @@ namespace SimpleDnsCrypt.Models
             {
                 _isChangeable = value;
                 NotifyOfPropertyChange(() => IsChangeable);
+            }
+        }
+
+        /// <summary>
+        /// The card is a virtual, tunnel or loopback adapter rather than a cable or radio. Decorative:
+        /// it never decides whether the interface is listed.
+        /// </summary>
+        public bool IsVirtualAdapter
+        {
+            get => _isVirtualAdapter;
+            set
+            {
+                _isVirtualAdapter = value;
+                NotifyOfPropertyChange(() => IsVirtualAdapter);
             }
         }
 

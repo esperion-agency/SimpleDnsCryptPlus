@@ -1,0 +1,62 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
+
+    <!--
+        MainView drew its sections as thirteen copies of the same checkered Border, each with its
+        margin and padding tuned by hand. That is how the vertical rhythm ended up split between
+        0,14 and 0,10 and why one header sits 3px lower than its neighbour. Per-site properties that
+        genuinely differ — DockPanel.Dock, IsEnabled, MinHeight, a one-off Margin — stay in the
+        markup; everything that was copied stays here.
+    -->
+    <Style x:Key="SectionBorderStyle" TargetType="Border">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="#198AB328" />
+        <Setter Property="Padding" Value="10" />
+        <Setter Property="Margin" Value="0,14,0,0" />
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
+                              Opacity="0.4">
+                    <DrawingBrush.Drawing>
+                        <DrawingGroup>
+                            <GeometryDrawing Brush="#FF8ab329">
+                                <GeometryDrawing.Geometry>
+                                    <GeometryGroup>
+                                        <RectangleGeometry Rect="0,0,50,50" />
+                                        <RectangleGeometry Rect="50,50,50,50" />
+                                    </GeometryGroup>
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                        </DrawingGroup>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--
+        The heading beside a section's icon. FontSize 20 with 0.7 opacity on the brand green is what
+        every tab already used; LinkHeaderStyle is a different thing (22px, and AboutView depends on
+        it), so this is its own key rather than a reuse of that one.
+    -->
+    <Style x:Key="SectionHeaderText" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="#FF8ab329" />
+        <Setter Property="Opacity" Value="0.7" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Margin" Value="5,0,0,3" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- The icon that leads a section heading, sized to sit on the same baseline as SectionHeaderText. -->
+    <Style x:Key="SectionHeaderIcon" TargetType="iconPacks:PackIconMaterial">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Foreground" Value="#FF8ab329" />
+        <Setter Property="Opacity" Value="0.7" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+</ResourceDictionary>

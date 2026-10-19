@@ -20,6 +20,13 @@
              lex:ResxLocalizationProvider.DefaultDictionary="Translation">
     <UserControl.Resources>
         <ResourceDictionary>
+            <!--
+                Merged here rather than into ResourceLibrary.xaml so this view resolves its own keys.
+                MergedDictionaries has to be the first child of the dictionary, before the converters.
+            -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/SectionStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
             <converters:InterfaceTypeToIconConverter x:Key="InterfaceTypeToIconConverter"
                                                      EthernetIcon="EthernetCable"
                                                      EthernetIconOffline="EthernetCableOff"
@@ -73,26 +80,7 @@
                     <TabItem.Content>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <DockPanel Margin="0,10,0,0">
-                                <Border BorderThickness="1" Background="#198AB328" Padding="10,10" Margin="0,0,0,0"
-                                        MinHeight="75" DockPanel.Dock="Top"
-                                        IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
-                                    <Border.BorderBrush>
-                                        <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                            <DrawingBrush.Drawing>
-                                                <DrawingGroup>
-                                                    <GeometryDrawing Brush="#FF8ab329">
-                                                        <GeometryDrawing.Geometry>
-                                                            <GeometryGroup>
-                                                                <RectangleGeometry Rect="0,0,50,50" />
-                                                                <RectangleGeometry Rect="50,50,50,50" />
-                                                            </GeometryGroup>
-                                                        </GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                </DrawingGroup>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.BorderBrush>
+                                <Border Style="{StaticResource SectionBorderStyle}" Margin="0,0,0,0" MinHeight="75" DockPanel.Dock="Top" IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
                                     <StackPanel Orientation="Vertical">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -100,16 +88,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Wan" Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=default_settings_configuration}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Wan"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=default_settings_configuration}">
                                             </TextBlock>
                                         </Grid>
                                         <UniformGrid Columns="2">
@@ -171,36 +151,11 @@
                                         </Grid>
                                     </StackPanel>
                                 </Border>
-                                <Border BorderThickness="1" Background="#198AB328" Padding="10,10" Margin="0,14,0,0"
-                                        MinHeight="75" DockPanel.Dock="Top">
-                                    <Border.BorderBrush>
-                                        <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                            <DrawingBrush.Drawing>
-                                                <DrawingGroup>
-                                                    <GeometryDrawing Brush="#FF8ab329">
-                                                        <GeometryDrawing.Geometry>
-                                                            <GeometryGroup>
-                                                                <RectangleGeometry Rect="0,0,50,50" />
-                                                                <RectangleGeometry Rect="50,50,50,50" />
-                                                            </GeometryGroup>
-                                                        </GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                </DrawingGroup>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.BorderBrush>
+                                <Border Style="{StaticResource SectionBorderStyle}" MinHeight="75" DockPanel.Dock="Top">
                                     <StackPanel Orientation="Vertical">
                                         <StackPanel Orientation="Horizontal">
-                                            <iconPacks:PackIconMaterial Height="20"
-                                                                        Width="20" Kind="Flash" Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Text="{lex:Loc Key=default_settings_service_header}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Kind="Flash"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Text="{lex:Loc Key=default_settings_service_header}">
                                             </TextBlock>
                                         </StackPanel>
                                         <Grid>
@@ -264,26 +219,7 @@
                                         </Grid>
                                     </StackPanel>
                                 </Border>
-                                <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,14,0,0"
-                                        DockPanel.Dock="Bottom"
-                                        IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
-                                    <Border.BorderBrush>
-                                        <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                            <DrawingBrush.Drawing>
-                                                <DrawingGroup>
-                                                    <GeometryDrawing Brush="#FF8ab329">
-                                                        <GeometryDrawing.Geometry>
-                                                            <GeometryGroup>
-                                                                <RectangleGeometry Rect="0,0,50,50" />
-                                                                <RectangleGeometry Rect="50,50,50,50" />
-                                                            </GeometryGroup>
-                                                        </GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                </DrawingGroup>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.BorderBrush>
+                                <Border Style="{StaticResource SectionBorderStyle}" DockPanel.Dock="Bottom" IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
                                     <StackPanel Orientation="Vertical">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -291,67 +227,61 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Lan" Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=default_settings_network_cards}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Lan"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=default_settings_network_cards}">
                                             </TextBlock>
                                             <controls:ToggleSwitch Cursor="Hand" IsOn="{Binding ShowHiddenCards}"
                                                                    Foreground="#FF575757" Grid.Column="2" Grid.Row="0"
-                                                                   HorizontalAlignment="Right"
+                                                                   HorizontalAlignment="Right" Margin="0,0,5,0"
                                                                    OffContent="{lex:Loc Key=default_settings_show_hidden_cards}"
                                                                    OnContent="{lex:Loc Key=default_settings_show_hidden_cards}">
                                             </controls:ToggleSwitch>
                                         </Grid>
-                                        <ItemsControl ItemsSource="{Binding LocalNetworkInterfaces}">
+                                        <ItemsControl ItemsSource="{Binding LocalNetworkInterfaces}"
+                                                      Margin="-4" HorizontalAlignment="Center">
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
-                                                    <UniformGrid Columns="4" />
+                                                    <WrapPanel />
                                                 </ItemsPanelTemplate>
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <controls:Tile Cursor="Hand" Title="{Binding Name, Mode=OneWay}"
+                                                    <controls:Tile Cursor="Hand" Width="160" Height="100" Margin="4"
+                                                                   Title="{Binding Name, Mode=OneWay}"
                                                                    cal:Message.Attach="[Event Click] = [Action NetworkCardClicked($dataContext)]"
                                                                    TitleFontSize="{Binding Name, Mode=OneWay, Converter={StaticResource TextLengthToFontSizeConverter}}"
-                                                                   ToolTip="{Binding Description}" Foreground="#FFFFFF"
+                                                                   Foreground="#FFFFFF"
                                                                    Background="{Binding Converter={StaticResource InUseToBackgroundConverter}}"
-                                                                   TiltFactor="1" Width="Auto" Height="100"
-                                                                   HorizontalAlignment="Left">
+                                                                   TiltFactor="1">
+                                                        <controls:Tile.ToolTip>
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding Description}" />
+                                                                <TextBlock FontStyle="Italic"
+                                                                           Text="{lex:Loc Key=network_card_virtual_hint}"
+                                                                           Visibility="{Binding IsVirtualAdapter, Converter={StaticResource BoolToVisibilityCollapsedConverter}}" />
+                                                            </StackPanel>
+                                                        </controls:Tile.ToolTip>
+                                                        <!-- Height matches the tile because the template centres
+                                                             its content in a cell that spans the whole tile: left
+                                                             at auto height, the address line stops sitting on the
+                                                             top edge and floats next to the icon instead. Measured,
+                                                             not assumed - Tile.Title is painted bottom-left, so the
+                                                             cube marker lives in the icon, not in a corner. -->
                                                         <Grid Height="100">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="140" />
-                                                                <ColumnDefinition Width="30" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="*" />
-                                                            </Grid.RowDefinitions>
-                                                            <iconPacks:PackIconMaterial Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                                                                HorizontalAlignment="Center"
-                                                                VerticalAlignment="Center"
-                                                                Kind="{Binding Converter={StaticResource InterfaceTypeToIconConverter}}"
-                                                                Foreground="#FFFFFF"
-                                                                Width="40"
-                                                                Height="40" />
-                                                            <iconPacks:PackIconMaterial Grid.Row="0" Grid.Column="1"
-                                                                VerticalAlignment="Top"
-                                                                Kind="Check"
-                                                                Width="16" Height="16"
-                                                                Margin="7"
-                                                                Foreground="#FFFFFF"
-                                                                Visibility="{Binding UseDnsCrypt, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                                            <TextBlock Grid.Row="0" Grid.Column="0"
-                                                                       Foreground="White"
-                                                                       Text="{Binding IpAddresses}"
-                                                                       Margin="3"
-                                                                       TextTrimming="CharacterEllipsis">
-                                                            </TextBlock>
+                                                            <iconPacks:PackIconMaterial HorizontalAlignment="Center"
+                                                                                        VerticalAlignment="Center"
+                                                                                        Kind="{Binding Converter={StaticResource InterfaceTypeToIconConverter}}"
+                                                                                        Foreground="#FFFFFF"
+                                                                                        Width="40" Height="40" />
+                                                            <iconPacks:PackIconMaterial Kind="Check"
+                                                                                        VerticalAlignment="Top" HorizontalAlignment="Right"
+                                                                                        Width="16" Height="16" Margin="7"
+                                                                                        Foreground="#FFFFFF"
+                                                                                        Visibility="{Binding UseDnsCrypt, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                            <TextBlock Text="{Binding IpAddresses}"
+                                                                       Foreground="White" Margin="3"
+                                                                       HorizontalAlignment="Left"
+                                                                       TextTrimming="CharacterEllipsis" />
                                                         </Grid>
                                                     </controls:Tile>
                                                 </DataTemplate>
@@ -367,26 +297,7 @@
                              Header="{lex:Loc Key=tabitem_resolvers}">
                     <TabItem.Content>
                         <DockPanel Margin="0,10,0,0">
-                            <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,14,0,0"
-                                    DockPanel.Dock="Top"
-                                    IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
-                                <Border.BorderBrush>
-                                    <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                  Opacity="0.4">
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <GeometryDrawing Brush="#FF8ab329">
-                                                    <GeometryDrawing.Geometry>
-                                                        <GeometryGroup>
-                                                            <RectangleGeometry Rect="0,0,50,50" />
-                                                            <RectangleGeometry Rect="50,50,50,50" />
-                                                        </GeometryGroup>
-                                                    </GeometryDrawing.Geometry>
-                                                </GeometryDrawing>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Border.BorderBrush>
+                            <Border Style="{StaticResource SectionBorderStyle}" DockPanel.Dock="Top" IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
                                 <StackPanel Orientation="Vertical">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -394,16 +305,8 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                    Width="20" Kind="AutoFix" Opacity="0.7"
-                                                                    Foreground="#FF8ab329"
-                                                                    HorizontalAlignment="Left"
-                                                                    VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="1" Grid.Row="0"
-                                                   Text="{lex:Loc Key=resolvers_dnscrypt_mode_header}"
-                                                   TextWrapping="Wrap" VerticalAlignment="Center"
-                                                   Foreground="#FF8ab329" FontSize="20"
-                                                   Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold" />
+                                        <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="AutoFix"/>
+                                        <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=resolvers_dnscrypt_mode_header}"/>
                                     </Grid>
                                     <TextBlock Foreground="#FF575757" Margin="0,5,0,0"
                                                Text="{lex:Loc Key=resolvers_dnscrypt_mode_description}" />
@@ -415,49 +318,18 @@
                                                            Margin="0,5,0,0" />
                                 </StackPanel>
                             </Border>
-                            <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,14,0,0"
-                                    DockPanel.Dock="Bottom"
-                                    IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
-                                <Border.BorderBrush>
-                                    <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                  Opacity="0.4">
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <GeometryDrawing Brush="#FF8ab329">
-                                                    <GeometryDrawing.Geometry>
-                                                        <GeometryGroup>
-                                                            <RectangleGeometry Rect="0,0,50,50" />
-                                                            <RectangleGeometry Rect="50,50,50,50" />
-                                                        </GeometryGroup>
-                                                    </GeometryDrawing.Geometry>
-                                                </GeometryDrawing>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Border.BorderBrush>
+                            <Border Style="{StaticResource SectionBorderStyle}" DockPanel.Dock="Bottom" IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
                                 <StackPanel Orientation="Vertical">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                    Width="20" Kind="Dns" Opacity="0.7"
-                                                                    Foreground="#FF8ab329"
-                                                                    HorizontalAlignment="Left"
-                                                                    VerticalAlignment="Center" />
+                                        <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Dns"/>
                                         <DockPanel Grid.Column="1" Grid.Row="0"
                                                    Margin="5,0,0,3">
-                                            <TextBlock DockPanel.Dock="Left"
-                                                       Text="{lex:Loc Key=resolvers_available_resolvers_header}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" FontWeight="Bold" />
-                                            <TextBlock DockPanel.Dock="Left"
-                                                       Text="{Binding Resolvers.Count, StringFormat={}({0})}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" FontWeight="Bold" Margin="5,0,0,0" />
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" DockPanel.Dock="Left" Text="{lex:Loc Key=resolvers_available_resolvers_header}"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" DockPanel.Dock="Left" Text="{Binding Resolvers.Count, StringFormat={}({0})}"/>
                                             <Button DockPanel.Dock="Right"
                                                     Command="{Binding SaveLocalServersCommand}"
                                                     Cursor="Hand"
@@ -621,26 +493,7 @@
                     <TabItem.Content>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <DockPanel Margin="0,10,0,0">
-                                <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,14,0,0"
-                                        DockPanel.Dock="Top"
-                                        IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
-                                    <Border.BorderBrush>
-                                        <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                            <DrawingBrush.Drawing>
-                                                <DrawingGroup>
-                                                    <GeometryDrawing Brush="#FF8ab329">
-                                                        <GeometryDrawing.Geometry>
-                                                            <GeometryGroup>
-                                                                <RectangleGeometry Rect="0,0,50,50" />
-                                                                <RectangleGeometry Rect="50,50,50,50" />
-                                                            </GeometryGroup>
-                                                        </GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                </DrawingGroup>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.BorderBrush>
+                                <Border Style="{StaticResource SectionBorderStyle}" DockPanel.Dock="Top" IsEnabled="{Binding IsSavingConfiguration, Converter={StaticResource ReverseBoolToEnabledConverter}}">
                                     <StackPanel Orientation="Vertical">
                                         <!-- Listen Addresses begin -->
                                         <Grid>
@@ -649,17 +502,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Ethernet"
-                                                                        Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=address_settings_listen_addresses}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Ethernet"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=address_settings_listen_addresses}">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -688,17 +532,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="BookOpenPageVariant"
-                                                                        Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=advanced_settings_dnscache}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="BookOpenPageVariant"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=advanced_settings_dnscache}">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -719,7 +554,7 @@
                                                 IsEnabled="{Binding IsWorkingOnService, Converter={StaticResource ReverseBoolToEnabledConverter}}"
                                                 Grid.Row="0" Grid.Column="1" Cursor="Hand"
                                                 IsOn="{Binding DnscryptProxyConfiguration.cache}"
-                                                HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0">
                                             </controls:ToggleSwitch>
                                         </Grid>
                                         <!-- DNS Cache end -->
@@ -730,17 +565,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Numeric6BoxMultipleOutline"
-                                                                        Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=advanced_settings_blockipv6}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Numeric6BoxMultipleOutline"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=advanced_settings_blockipv6}">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -761,7 +587,7 @@
                                                 IsEnabled="{Binding IsWorkingOnService, Converter={StaticResource ReverseBoolToEnabledConverter}}"
                                                 Grid.Row="0" Grid.Column="1" Cursor="Hand"
                                                 IsOn="{Binding DnscryptProxyConfiguration.block_ipv6}"
-                                                HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0">
                                             </controls:ToggleSwitch>
                                         </Grid>
                                         <!-- Block IPv6 end -->
@@ -772,17 +598,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Network"
-                                                                        Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=advanced_settings_forcetcp}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Network"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=advanced_settings_forcetcp}">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -803,7 +620,7 @@
                                                 IsEnabled="{Binding IsWorkingOnService, Converter={StaticResource ReverseBoolToEnabledConverter}}"
                                                 Grid.Row="0" Grid.Column="1" Cursor="Hand"
                                                 IsOn="{Binding DnscryptProxyConfiguration.force_tcp}"
-                                                HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0">
                                             </controls:ToggleSwitch>
                                         </Grid>
                                         <!-- Force TCP end -->
@@ -814,17 +631,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="ArrowAll"
-                                                                        Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=advanced_settings_globalresolver}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="ArrowAll"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=advanced_settings_globalresolver}">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -845,7 +653,7 @@
                                                 IsEnabled="{Binding IsWorkingOnService, Converter={StaticResource ReverseBoolToEnabledConverter}}"
                                                 Grid.Row="0" Grid.Column="1" Cursor="Hand"
                                                 IsOn="{Binding IsOperatingAsGlobalResolver}"
-                                                HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0">
                                             </controls:ToggleSwitch>
                                         </Grid>
                                         <!-- Global Resolver end -->
@@ -856,17 +664,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="BackupRestore"
-                                                                        Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=advanced_settings_fallback_resolvers}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="BackupRestore"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=advanced_settings_fallback_resolvers}">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -895,17 +694,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Timelapse"
-                                                                        Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="{lex:Loc Key=advanced_settings_netprobe_timeout}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Timelapse"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=advanced_settings_netprobe_timeout}">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -938,17 +728,8 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Text"
-                                                                        Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0"
-                                                       Text="Proxy Logging"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Text"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="Proxy Logging">
                                             </TextBlock>
                                         </Grid>
                                         <Grid>
@@ -969,7 +750,7 @@
                                                 IsEnabled="{Binding IsWorkingOnService, Converter={StaticResource ReverseBoolToEnabledConverter}}"
                                                 Grid.Row="0" Grid.Column="1" Cursor="Hand"
                                                 IsOn="{Binding DnscryptProxyConfiguration.log}"
-                                                HorizontalAlignment="Right" VerticalAlignment="Top">
+                                                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,5,0">
                                             </controls:ToggleSwitch>
                                         </Grid>
                                         <!-- Logging end -->
@@ -991,25 +772,7 @@
                     <TabItem.Content>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <DockPanel Margin="0,10,0,0">
-                                <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,10,0,0"
-                                        DataContext="{Binding QueryLogViewModel}" DockPanel.Dock="Top">
-                                    <Border.BorderBrush>
-                                        <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                            <DrawingBrush.Drawing>
-                                                <DrawingGroup>
-                                                    <GeometryDrawing Brush="#FF8ab329">
-                                                        <GeometryDrawing.Geometry>
-                                                            <GeometryGroup>
-                                                                <RectangleGeometry Rect="0,0,50,50" />
-                                                                <RectangleGeometry Rect="50,50,50,50" />
-                                                            </GeometryGroup>
-                                                        </GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                </DrawingGroup>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.BorderBrush>
+                                <Border Style="{StaticResource SectionBorderStyle}" DataContext="{Binding QueryLogViewModel}" DockPanel.Dock="Top">
                                     <Grid
                                         Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource HeightConverter}, ConverterParameter='QueryLog'}">
                                         <Grid.RowDefinitions>
@@ -1023,21 +786,14 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Eye" Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=querylog}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Eye"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=querylog}">
                                             </TextBlock>
                                             <controls:ToggleSwitch Grid.Column="2" Grid.Row="0"
                                                                          Cursor="Hand"
                                                                          IsOn="{Binding IsQueryLogLogging}"
                                                                          HorizontalAlignment="Right"
-                                                                         VerticalAlignment="Top" Margin="0,0,10,0">
+                                                                         VerticalAlignment="Top" Margin="0,0,5,0">
                                             </controls:ToggleSwitch>
                                         </Grid>
                                         <Grid Grid.Row="1">
@@ -1224,25 +980,7 @@
                              Header="{lex:Loc Key=tabitem_cloakandforward}">
                     <TabItem.Content>
                         <DockPanel Margin="0,10,0,0">
-                            <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,10,0,0"
-                                        DataContext="{Binding CloakAndForwardViewModel}" DockPanel.Dock="Top">
-                                <Border.BorderBrush>
-                                    <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <GeometryDrawing Brush="#FF8ab329">
-                                                    <GeometryDrawing.Geometry>
-                                                        <GeometryGroup>
-                                                            <RectangleGeometry Rect="0,0,50,50" />
-                                                            <RectangleGeometry Rect="50,50,50,50" />
-                                                        </GeometryGroup>
-                                                    </GeometryDrawing.Geometry>
-                                                </GeometryDrawing>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Border.BorderBrush>
+                            <Border Style="{StaticResource SectionBorderStyle}" DataContext="{Binding CloakAndForwardViewModel}" DockPanel.Dock="Top">
 
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -1259,17 +997,8 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-                                    <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                    Width="20" Kind="AccountConvert"
-                                                                    Opacity="0.7"
-                                                                    Foreground="#FF8ab329"
-                                                                    HorizontalAlignment="Left"
-                                                                    VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" Grid.Row="0"
-                                                   Text="{lex:Loc Key=cloaking}"
-                                                   TextWrapping="Wrap" VerticalAlignment="Center"
-                                                   Foreground="#FF8ab329" FontSize="20"
-                                                   Opacity="0.7" Margin="5,0,0,0" FontWeight="Bold">
+                                    <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="AccountConvert"/>
+                                    <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=cloaking}">
                                     </TextBlock>
                                     <controls:ToggleSwitch HorizontalAlignment="Right" Margin="0,0,5,0"
                                                                      Cursor="Hand"
@@ -1456,17 +1185,8 @@
                                             </Button>
                                         </StackPanel>
                                     </Grid>
-                                    <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="4" Height="20" Margin="0,7,0,0"
-                                                                    Width="20" Kind="Radar"
-                                                                    Opacity="0.7"
-                                                                    Foreground="#FF8ab329"
-                                                                    HorizontalAlignment="Left"
-                                                                    VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" Grid.Row="4" Margin="5,7,0,0"
-                                                   Text="{lex:Loc Key=forwarding}"
-                                                   TextWrapping="Wrap" VerticalAlignment="Center"
-                                                   Foreground="#FF8ab329" FontSize="20"
-                                                   Opacity="0.7" FontWeight="Bold">
+                                    <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="4" Margin="0,7,0,0" Kind="Radar"/>
+                                    <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="4" Margin="5,7,0,0" Text="{lex:Loc Key=forwarding}">
                                     </TextBlock>
                                     <controls:ToggleSwitch HorizontalAlignment="Right" Margin="0,7,5,0"
                                                                      Cursor="Hand"
@@ -1672,25 +1392,7 @@
                     <TabItem.Content>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <DockPanel Margin="0,10,0,0">
-                                <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,10,0,0"
-                                        DataContext="{Binding DomainBlockLogViewModel}" DockPanel.Dock="Top">
-                                    <Border.BorderBrush>
-                                        <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                            <DrawingBrush.Drawing>
-                                                <DrawingGroup>
-                                                    <GeometryDrawing Brush="#FF8ab329">
-                                                        <GeometryDrawing.Geometry>
-                                                            <GeometryGroup>
-                                                                <RectangleGeometry Rect="0,0,50,50" />
-                                                                <RectangleGeometry Rect="50,50,50,50" />
-                                                            </GeometryGroup>
-                                                        </GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                </DrawingGroup>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.BorderBrush>
+                                <Border Style="{StaticResource SectionBorderStyle}" DataContext="{Binding DomainBlockLogViewModel}" DockPanel.Dock="Top">
                                     <Grid Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight, Converter={StaticResource HeightConverter}, ConverterParameter='DomainBlockLog'}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -1703,21 +1405,14 @@
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                        Width="20" Kind="Eye" Opacity="0.7"
-                                                                        Foreground="#FF8ab329"
-                                                                        HorizontalAlignment="Left"
-                                                                        VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=domainblocklog}"
-                                                       TextWrapping="Wrap" VerticalAlignment="Center"
-                                                       Foreground="#FF8ab329" FontSize="20"
-                                                       Opacity="0.7" Margin="5,0,0,3" FontWeight="Bold">
+                                            <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="Eye"/>
+                                            <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=domainblocklog}">
                                             </TextBlock>
                                             <controls:ToggleSwitch Grid.Column="2" Grid.Row="0"
                                                                          Cursor="Hand"
                                                                          IsOn="{Binding IsDomainBlockLogLogging}"
                                                                          HorizontalAlignment="Right"
-                                                                         VerticalAlignment="Top" Margin="0,0,10,0">
+                                                                         VerticalAlignment="Top" Margin="0,0,5,0">
                                             </controls:ToggleSwitch>
                                         </Grid>
                                         <Grid Grid.Row="1">
@@ -1893,25 +1588,7 @@
                     <TabItem.Content>
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <DockPanel Margin="0,10,0,0">
-                                <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,10,0,0"
-                                        DataContext="{Binding AddressBlockLogViewModel}" DockPanel.Dock="Top">
-                                    <Border.BorderBrush>
-                                        <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                            <DrawingBrush.Drawing>
-                                                <DrawingGroup>
-                                                    <GeometryDrawing Brush="#FF8ab329">
-                                                        <GeometryDrawing.Geometry>
-                                                            <GeometryGroup>
-                                                                <RectangleGeometry Rect="0,0,50,50" />
-                                                                <RectangleGeometry Rect="50,50,50,50" />
-                                                            </GeometryGroup>
-                                                        </GeometryDrawing.Geometry>
-                                                    </GeometryDrawing>
-                                                </DrawingGroup>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.BorderBrush>
+                                <Border Style="{StaticResource SectionBorderStyle}" DataContext="{Binding AddressBlockLogViewModel}" DockPanel.Dock="Top">
                                     <StackPanel>
 
                                     </StackPanel>
@@ -1925,25 +1602,7 @@
                              Header="{lex:Loc Key=tabitem_domainblacklist}">
                     <TabItem.Content>
                         <DockPanel Margin="0,10,0,0">
-                            <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,10,0,0"
-                                        DataContext="{Binding DomainBlacklistViewModel}" DockPanel.Dock="Top">
-                                <Border.BorderBrush>
-                                    <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <GeometryDrawing Brush="#FF8ab329">
-                                                    <GeometryDrawing.Geometry>
-                                                        <GeometryGroup>
-                                                            <RectangleGeometry Rect="0,0,50,50" />
-                                                            <RectangleGeometry Rect="50,50,50,50" />
-                                                        </GeometryGroup>
-                                                    </GeometryDrawing.Geometry>
-                                                </GeometryDrawing>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Border.BorderBrush>
+                            <Border Style="{StaticResource SectionBorderStyle}" DataContext="{Binding DomainBlacklistViewModel}" DockPanel.Dock="Top">
 
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -1960,17 +1619,8 @@
                                         <RowDefinition Height="*" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-                                    <iconPacks:PackIconMaterial Grid.Column="0" Grid.Row="0" Height="20"
-                                                                    Width="20" Kind="BlockHelper"
-                                                                    Opacity="0.7"
-                                                                    Foreground="#FF8ab329"
-                                                                    HorizontalAlignment="Left"
-                                                                    VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" Grid.Row="0"
-                                                   Text="{lex:Loc Key=blacklist_header}"
-                                                   TextWrapping="Wrap" VerticalAlignment="Center"
-                                                   Foreground="#FF8ab329" FontSize="20"
-                                                   Opacity="0.7" Margin="5,0,0,0" FontWeight="Bold">
+                                    <iconPacks:PackIconMaterial Style="{StaticResource SectionHeaderIcon}" Grid.Column="0" Grid.Row="0" Kind="BlockHelper"/>
+                                    <TextBlock Style="{StaticResource SectionHeaderText}" Grid.Column="1" Grid.Row="0" Text="{lex:Loc Key=blacklist_header}">
                                     </TextBlock>
                                     <controls:ToggleSwitch HorizontalAlignment="Right" Margin="0,0,5,0"
                                                                      Cursor="Hand"
@@ -2432,25 +2082,7 @@
                              Header="{lex:Loc Key=tabitem_addressblacklist}">
                     <TabItem.Content>
                         <DockPanel Margin="0,10,0,0">
-                            <Border BorderThickness="1" Background="#198AB328" Padding="10" Margin="0,10,0,0"
-                                        DataContext="{Binding AddressBlacklistViewModel}" DockPanel.Dock="Top">
-                                <Border.BorderBrush>
-                                    <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile"
-                                                      Opacity="0.4">
-                                        <DrawingBrush.Drawing>
-                                            <DrawingGroup>
-                                                <GeometryDrawing Brush="#FF8ab329">
-                                                    <GeometryDrawing.Geometry>
-                                                        <GeometryGroup>
-                                                            <RectangleGeometry Rect="0,0,50,50" />
-                                                            <RectangleGeometry Rect="50,50,50,50" />
-                                                        </GeometryGroup>
-                                                    </GeometryDrawing.Geometry>
-                                                </GeometryDrawing>
-                                            </DrawingGroup>
-                                        </DrawingBrush.Drawing>
-                                    </DrawingBrush>
-                                </Border.BorderBrush>
+                            <Border Style="{StaticResource SectionBorderStyle}" DataContext="{Binding AddressBlacklistViewModel}" DockPanel.Dock="Top">
                                 <StackPanel>
 
                                 </StackPanel>

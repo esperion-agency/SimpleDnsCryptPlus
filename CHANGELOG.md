@@ -10,7 +10,33 @@ their respective repositories for authoritative histories.
 
 ## [Unreleased]
 
-Nothing has landed since the release candidate below.
+### Added
+- **Virtual adapters are marked, not hidden.** The interface list filters against
+  `Global.NetworkInterfaceBlacklist`, a list of names a 2010 Windows used, so a Hyper-V or WSL
+  switch, a Bluetooth PAN and any VPN whose `NetworkInterfaceType` .NET cannot name were drawn with
+  the same cable icon as a physical card. On a machine with containers or a VPN active that looked
+  like a filter that had silently switched itself off — it had not, the blacklist simply never knew
+  those adapters. They now get a cube icon and a "Virtual or tunnel adapter" tooltip line. Nothing
+  was added to the blacklist, so no adapter that used to appear has disappeared
+  (`DNSCrypt/SimpleDnsCrypt#565` is the complaint that keeps this the right shape;
+  `Tests/NetworkInterfaceFilterTests.cs` pins both halves). `Global.VirtualAdapterMarkers`
+  decorates; `IsFilteredOut` still decides what is hidden, and the two are deliberately held to
+  different standards.
+- The tooltip's explanation is English-only in the neutral `Translation.resx`, which reaches every
+  culture through `ResourceManager`'s invariant fallback.
+  `Tests/LocalizationCoverageTests.cs` now measures that rather than trusting it, because the
+  tooltip is exactly the kind of string that fails in silence.
+
+### Fixed
+- The main view drew its sections as thirteen copies of one checkered `Border`, each with its margin
+  and padding tuned by hand. The vertical rhythm was split between 14px and 10px as a result, and
+  section headings and their right-hand switches disagreed by a few pixels from tab to tab. Sections
+  now share `SimpleDnsCrypt/Styles/SectionStyles.xaml`, and `Tests/MainViewStructureTests.cs` reads
+  the markup as XML so a copy cannot creep back in unnoticed.
+- The network cards were placed in a `UniformGrid` of four fixed columns while each tile was pinned
+  to 170 device-independent pixels, so the gap between tiles never matched the gap at the edge and a
+  maximized window showed mostly empty space. They now wrap at a fixed tile width with an even
+  gutter, centred in the section.
 
 ## [0.9.0-rc.2] - 2026-09-28
 

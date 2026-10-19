@@ -134,4 +134,7 @@
   <data name="updater_failure_extraction" xml:space="preserve">
     <value>the archive could not be unpacked</value>
   </data>
+  <data name="network_card_virtual_hint" xml:space="preserve">
+    <value>Virtual or tunnel adapter</value>
+  </data>
 </root>

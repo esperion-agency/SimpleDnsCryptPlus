@@ -43,6 +43,43 @@ namespace SimpleDnsCrypt.Helper
         }
 
         /// <summary>
+        ///     The adapter types that are a real cable or a real radio. This is the same set
+        ///     <see cref="Converters.InterfaceTypeToIconConverter"/> draws as physical; everything it
+        ///     sends to its default branch arrives here too, which is what catches a driver whose
+        ///     ifType .NET has no name for — Kaspersky's VPN adapter reports 53 and shows up in the
+        ///     list wearing a LAN icon.
+        /// </summary>
+        private static readonly NetworkInterfaceType[] PhysicalAdapterTypes =
+        {
+            NetworkInterfaceType.Ethernet,
+            NetworkInterfaceType.GigabitEthernet,
+            NetworkInterfaceType.FastEthernetT,
+            NetworkInterfaceType.FastEthernetFx,
+            NetworkInterfaceType.Ethernet3Megabit,
+            NetworkInterfaceType.Wireless80211
+        };
+
+        /// <summary>
+        ///     Whether an adapter looks virtual, tunneled or loopback, for the tile badge and tooltip.
+        ///     Best-effort by design and held to a lower standard than <see cref="IsFilteredOut"/>:
+        ///     a wrong badge costs one icon, a wrong hide costs a user's connection. Every blacklist
+        ///     entry is still named by a marker token above — <c>EveryHiddenAdapterIsAlsoMarked</c>
+        ///     holds that up — so hiding and marking agree without this having to search the hidden
+        ///     list, which would make the test unable to fail.
+        /// </summary>
+        public static bool LooksLikeVirtualAdapter(string description, string name, NetworkInterfaceType type)
+        {
+            if (!PhysicalAdapterTypes.Contains(type))
+            {
+                return true;
+            }
+
+            var text = (description ?? string.Empty) + "\n" + (name ?? string.Empty);
+
+            return Global.VirtualAdapterMarkers.Any(marker => text.Contains(marker, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
         ///     Get a list of the local network interfaces.
         /// </summary>
         /// <param name="listenAddresses"></param>
@@ -92,6 +129,7 @@ namespace SimpleDnsCrypt.Helper
                     Ipv6Support = nic.Supports(NetworkInterfaceComponent.IPv6),
                     OperationalStatus = nic.OperationalStatus,
                     IpAddresses = ipAddressString,
+                    IsVirtualAdapter = LooksLikeVirtualAdapter(nic.Description, nic.Name, nic.NetworkInterfaceType),
                 };
                 // strict check if the interface supports IPv6
                 localNetworkInterface.UseDnsCrypt = IsUsingDnsCrypt(listenAddresses, localNetworkInterface, localNetworkInterface.Ipv6Support);
