@@ -38,6 +38,14 @@ their respective repositories for authoritative histories.
   tooltip is exactly the kind of string that fails in silence.
 
 ### Changed
+- **The settings the GUI does not own stay file-only, by decision.** Ardy chose (2026-10-19) not to promote
+  `enable_hot_reload`, `odoh_servers`, `pqdnscrypt`, `[schedules]` and the rest into UI controls now that a
+  save preserves them. The blocker the 1.0.0 plan named was "a hand-added key is deleted on save", and
+  preservation closes it; modelling a key would also start emitting the C# default for it into every
+  configuration, which is a behavior change nobody asked for. The decision and its reason are written into
+  the XML docs of `SimpleDnsCrypt/Helper/TomlKeyPreservation.cs` and
+  `SimpleDnsCrypt/Helper/DnscryptProxyConfigurationManager.cs` and into `docs/backlog-triage.md`, so the
+  next person — human or agent — does not read the unmodelled keys as a to-do.
 - **`.editorconfig` is a real contract now, and the Release build fails on a new nullable warning.** The
   file used to hold seven lines. It now carries the line-ending rule the working tree already follows
   (CRLF, scoped to the text families the repository tracks so the rule cannot be applied to a `.png`),

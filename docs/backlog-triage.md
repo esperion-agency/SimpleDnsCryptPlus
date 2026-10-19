@@ -113,8 +113,17 @@ document that carried 12 top-level keys and 5 tables produced additional keys th
 harmless in general, because a proxy default that differs from C#'s `false`/`0` gets written as the wrong
 value. This is also why the 2.1.18 keys the GUI has no control for were left *unmodelled*: `TomlKeyPreservation`
 keeps them verbatim, while adding `bool enable_hot_reload` to the model would start emitting `false` into
-every file that never mentioned it. Add those keys one at a time, with a control and with the proxy's own
-default, not in a bulk pass. `Tests/ProxyConfigurationRoundTripTests.EveryKeyInTheSavedFile_ComesFromTheFileOrFromTheModel`
+every file that never mentioned it.
+
+**Decided 2026-10-19 (Ardy): those keys stay file-only.** `TomlKeyPreservation` carries them through a save
+verbatim and they are deliberately *not* promoted to UI settings — the blocker the 1.0.0 plan named (a
+hand-added key deleted on save) is closed by preservation, not by modelling. Raising one of them into
+`DnscryptProxyConfiguration` is therefore a decision to make, not a cleanup to do: it must come one key at a
+time, with a control in the UI and with the proxy's own default as the property's initial value, because the
+moment it is in the model it is emitted into every file. The phrase `file-only by decision (Ardy, 2026-10-19)`
+appears in the XML docs of `TomlKeyPreservation` and `DnscryptProxyConfigurationManager` so neither a
+developer nor an AI re-litigates it by accident.
+`Tests/ProxyConfigurationRoundTripTests.EveryKeyInTheSavedFile_ComesFromTheFileOrFromTheModel`
 guards the boundary this fix is responsible for and deliberately does not assert anything about defaults.
 
 **The loader folds a mis-cased key onto the property it resembles.** `TomlSettings` maps properties with

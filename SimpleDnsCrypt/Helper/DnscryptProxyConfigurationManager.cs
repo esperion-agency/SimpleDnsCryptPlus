@@ -54,7 +54,9 @@ namespace SimpleDnsCrypt.Helper
 
                 // The model decides the values it owns and nothing else: whatever the file holds that the
                 // model has no property for is read back in and carried over, so a setting a user added by
-                // hand survives a save from the GUI instead of being silently deleted.
+                // hand survives a save from the GUI instead of being silently deleted. Those keys stay
+                // file-only by decision (Ardy, 2026-10-19) - see TomlKeyPreservation for why modelling one
+                // is a decision rather than a cleanup, and docs/backlog-triage.md for the record.
                 var table = Toml.Create(DnscryptProxyConfiguration, settings);
                 if (File.Exists(configFile))
                 {

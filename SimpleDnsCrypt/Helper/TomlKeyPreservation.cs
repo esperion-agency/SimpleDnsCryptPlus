@@ -13,6 +13,14 @@ namespace SimpleDnsCrypt.Helper
     ///         <c>[ip_encryption]</c>, <c>[captive_portals]</c>, <c>[schedules]</c> among them. Before this existed,
     ///         a user who added one of those by hand lost it on the next save from the application.
     ///     </para>
+    ///     <para>
+    ///         The carried-over keys are <c>file-only by decision (Ardy, 2026-10-19)</c>: they survive a save and
+    ///         are deliberately not promoted to UI settings. Adding one to <see cref="DnscryptProxyConfiguration"/>
+    ///         is a decision to make, not a cleanup to do — the writer emits the C# default for every property the
+    ///         loaded file never mentioned, so a modelled <c>bool enable_hot_reload</c> would start writing
+    ///         <c>false</c> into configurations that never spoke of the feature. Promote one key at a time, with a
+    ///         control in the UI and with dnscrypt-proxy's own default as the initial value.
+    ///     </para>
     /// </summary>
     public static class TomlKeyPreservation
     {
